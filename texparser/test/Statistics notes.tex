@@ -1,0 +1,1042 @@
+\documentclass[10pt, two column]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath, amsthm}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\addtolength{\textwidth}{+4cm} 
+\setlength{\marginparwidth}{0pt}
+\addtolength{\hoffset}{-2cm }
+\addtolength{\voffset}{-2cm }
+\addtolength{\textheight}{+5cm}
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}{Definition}[subsection]
+
+\title{Statistics: Notes}
+\author{Nic Kozeniauskas}
+\date{November 12, 2010}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\section{Preliminary Material}
+
+\subsection{Notation} 
+\begin{itemize}
+\item Random variables are usually denoted by a capital letter. e.g. $\overline{X}$ is the sample mean.
+\item Observed values of a random variable are usually denoted by a lower case letter. e.g. $\overline{x}$ is an observed value of the sample mean.
+\end{itemize}
+
+\subsection{Basic statistics}
+
+\begin{itemize}
+\item For the data $1.1, 1.2, 2.0, 2.7, 2.9, 4.3$ a {\bf stem and leaf plot} is \\ \begin{center} \vspace{-12pt}
+\begin{tabular}{r | l}
+1 & 1 2 \\
+2 & 0 7 9 \\
+3\\
+4 & 3
+\end{tabular}
+\end{center}
+The division doesn't have to be at the decimal point. Note that there are not observations between $3$ and $4$, but we still include $3$ as a stem. 
+\item A {\bf boxplot} is a graph with lines at the minimum, $25^{th}$ percentile ($q_{1}$), median ($q_{2}$), $75^{th}$ percentile ($q_{3}$) and the maximum. 
+\item The {\bf interquartile range} is $q_{3} - q_{1} = IQR$. 
+\item A data point $x$ is a {\bf suspected outlier} if $x < q_{1}$ and $1.5IQR < q_{1} - x \leq 3IQR$ or $x > q_{3}$ and $1.5IQR < x - q_{3} \leq 3IQR$. It is an {\bf outlier} if $x < q_{1}$ and $3IQR < q_{1} - x $ or $x > q_{3}$ and $3IQR < x - q_{3}$.
+\end{itemize}
+
+\subsection{Distributions}
+
+Normal distribution
+\begin{itemize}
+\item If $X_{1}, \dots, X_{n}$ i.i.d. $N(\mu, \sigma^{2})$, $\overline{X} = \frac{1}{n} \sum_{i=1}^{n} X_{i} \sim N(\mu, \sigma^{2}/n)$;
+\item If $X_{i} \sim N(\mu_{i}, \sigma_{i}^{2})$ are independent for $i = 1, \dots, n$ then $Y = \sum_{i=1}^{n} c_{i}X_{i} \sim N(\sum_{i=1}^{n} c_{i} \mu_{i}, \sum_{i=1}^{n} c_{i}^{2} \sigma_{i}^{2})$. \vspace{5pt}
+\end{itemize}
+
+Chi-square distribution
+\begin{itemize}
+\item If $X_{1}, \dots, X_{n}$ i.i.d. $N(0,1)$ then $X_{1}^{2} + \dots + X_{n}^{2} \sim \chi^{2}(n)$.
+\item If $X_{1}, \dots, X_{n}$ i.i.d. $N(\mu,\sigma^{2})$ then $\frac{1}{\sigma^{2}} \sum_{i=1}^{n} (X_{i}-\mu)^{2} \sim \chi^{2}(n)$.
+\item If $X_{1}, \dots, X_{n}$ i.i.d. $N(\mu,\sigma^{2})$ the sample estimate of the $\sigma^{2}$ is $s^{2} = \frac{1}{n-1} \sum_{i=1}^{n} (x_{i}-\overline{x})^{2}$ and $\frac{(n-1)S^{2}}{\sigma^{2}} \sim \chi^{2}(n-1)$. 
+\item If $X \sim \chi^{2}(n)$ and $Y \sim \chi^{2}(m)$ are independent then $X + Y \sim \chi^{2}(n+m)$.
+\item The expected value of a chi-squared RV is its d.o.f. \vspace{5pt}
+\end{itemize}
+
+$t$-distribution
+\begin{itemize}
+\item If $Z \sim N(0,1)$, $U \sim \chi^{2}(r)$ and $Z$ and $U$ are independent then $T = \frac{Z}{\sqrt{U/r}} \sim t(r)$. \vspace{5pt}
+\end{itemize}
+
+$F$-distribution
+\begin{itemize}
+\item If $U \sim \chi^{2}(r_{1})$ and $V \sim \chi^{2}(r_{2})$ are independent then $F = \frac{U/r_{1}}{V/r_{2}} \sim F(r_{1},r_{2})$;
+\item When using a table for the $F$-distribution you need to use the fact that \vspace{-6pt} 
+\[F_{1-\alpha/2}(m-1, n-1) = \frac{1}{F_{\alpha/2}(n-1, m-1)}.\] 
+\end{itemize}
+
+\section{Point Estimation}
+
+A typical point estimation problem is that you know that observations are coming from some distribution but you don't know the parameters of the distribution. You need to estimate them. 
+
+Terminology:
+\begin{itemize}
+\item An {\bf estimator} is a random variable for the parameter that you're estimating. It is a function of your sample. It is denoted with a hat. For a parameter $\theta$, $\widehat{\theta} = u(X_{1}, \dots, X_{n})$ is the estimator.
+\item An {\bf estimate} is an observed value of $\widehat{\theta}$ for a given sample.\\ 
+\end{itemize}
+
+\begin{definition}
+If $E\lbrace u(X_{1},\dots,X_{n}) \rbrace = \theta$ then $u(X_{1},\dots,X_{n})$ is called an {\bf unbiased estimator} of $\theta$. 
+\end{definition}
+
+\subsection{Maximum likelihood}
+
+Take iid RVs $X_{i}$ with a distribution $f(\theta; x_{i})$ with $\theta$ and unknown parameter. If we have $n$ observations from this sample, $x_{1}, \dots, x_{n}$, then the probability of obtaining this sample was:
+\[ P(X_{1} = x_{1}, \dots, X_{n} = x_{n}) = \prod_{i=1}^{n} f(\theta; x_{i}). \]
+This is also called the \emph{likelihood of $\theta$} denoted
+\[ L(\theta) = L(\theta;x_{1}, \dots, x_{n}). \]
+The maximum likelihood method chooses the value of $\theta$ which maximises this function. Usually we take the log of the likelihood in order to make the calculations easier. 
+
+When you have more than one parameter:
+\begin{itemize}
+\item take partial derivatives of the likelihood function w.r.t. each parameter,
+\item then solve these FOCs simultaneously, and
+\item check that the second order partial derivatives are negative.
+\end{itemize}
+
+If $X_{1}, \dots, X_{n}$ are i.i.d. $N(\mu, \sigma^{2})$ then the maximum likelihood estimates for the parameters are \vspace{-6pt}
+\[ \widehat{\mu} = \overline{X}, \quad \widehat{\sigma}^{2} = \frac{1}{n}\sum_{i=1}^{n} (X_{i}-\overline{X})^{2} = \frac{n-1}{n}S^{2}. \vspace{-6pt} \]
+
+{\bf Warning:} if the support of the RV depends on the parameter then you can't use the ML method.
+
+{\bf Example.} $X_{1}, \dots, X_{4}$ from uniform $[0, \theta]$ distribution. The likelihood function is \vspace{-6pt}
+\[
+L(\theta ) = \begin{cases}
+\left( \frac{1}{\theta} \right)^{4}, &\quad x \in [0, \theta], \: i = 1, \dots, 4  \\
+0, &\theta < x_{i} \text{ for some } i. 
+\end{cases} \vspace{-6pt}
+\]
+This is maximised when $\theta$ is as small as possible, so $\widehat{\theta} = \max(X_{i})$. 
+
+\subsection{Method of moments}
+
+General procedure:
+\begin{enumerate}
+\item $X_{1}, \dots, X_{n}$ i.i.d. $f(x; \theta_{1}, \dots, \theta_{r})$. 
+\item $k^{th}$ moment is $E(X^{k})$. 
+\item $k^{th}$ sample moment is $M_{k} = \sum_{i=1}^{n}X_{i}^{k}/n$. 
+\item Set $E(X^{k}) = M_{k}$ for $k = 1, \dots, r$ and solve for $(\theta_{1}, \dots, \theta_{r})$.
+\end{enumerate}
+
+\section{Sufficient Statistics}
+
+\begin{definition}
+{\bf Sufficient statistic}. $Y=y$ is a sufficient statistic for RVs $X_{1}, \dots, X_{n}$ if $P(X_{1}=x_{1}, \dots, X_{n}=x_{n} \vert Y=y)$ does not depend on the parameters of the unconditional joint distribution. \\
+\end{definition}
+
+\begin{theorem}
+{\bf Factorisation theorem}. If $X_{1}, \dots, X_{n}$ have joint p.d.f. or p.m.f. $f(x_{1}, \dots, x_{n}; \theta)$, then $Y = u(x_{1}, \dots, x_{n})$ is sufficient for $\theta$ iff \vspace{-6pt}
+\[ f(x_{1}, \dots, x_{n}; \theta) = \phi \left[ u(x_{1}, \dots, x_{n}); \theta \right] h(x_{1}, \dots, x_{n}). \vspace{-6pt} \]
+\end{theorem}
+\begin{itemize}
+\item The above function is the likelihood function. Therefore if there's a sufficient statistic you can find the MLE by maximising $\phi \left[ u(x_{1}, \dots, x_{n}) \right]$, which means that the MLE is a function of the sufficient statistic. 
+\end{itemize}
+
+{\bf Exponential Family.} There is a family of exponential distributions which can be written
+\[f(x; \theta) = \exp (K(x)p(\theta) + S(x) + q(\theta)).\]
+For such a distribution if $X_{1}, \dots, X_{n}$ are i.i.d. then $\sum_{i=1}^{n} K(X_{i})$ is a sufficient statistic for $\theta$. For example 
+\begin{align*}
+f(x;\theta) &= \frac{1}{\theta}e^{-x/\theta}, 0 < x < \infty \\
+&= \exp \left[x \left( - \frac{1}{\theta} \right) - \ln \theta \right] \\
+\Rightarrow f(x_{1}, \dots, x_{n};\theta) &= \exp \left[ - \frac{1}{\theta} \sum_{i} x_{i} - n \ln \theta  \right].
+\end{align*}
+
+\begin{theorem}
+{\bf Rao-Blackwell Theorem.} Let $X_{1}, \dots, X_{n}$ be i.i.d. RVs drawn from the distribution $f(x; \theta)$. If $Y_{1} = u_{1}(X_{1}, \dots, X_{n})$ is a sufficient statistic for $\theta$ and $Y_{2} = u_{2}(X_{1}, \dots, X_{n})$ is an unbiased estimate of $\theta$ (and is not just a function of $Y_{1}$), then $u(Y_{1}) = E(Y_{2} \vert Y_{1})$ is an unbiased estimate of $\theta$ with variance less than $var(Y_{2})$. \\
+\end{theorem}
+
+\section{Interval Estimation}
+
+\subsection{Interval estimate of mean} 
+
+Let $X_{1}, \dots, X_{n}$ be i.i.d. $N(\mu, \sigma^{2})$, $\mu$ be unknown and $\sigma^{2}$ known. We know that $\overline{X} \sim N(\mu, \sigma^{2}/n)$ and for $0 < \alpha < 1$ we can find $z_{\alpha/2}$ so that 
+\[ P \left( - z_{\alpha/2} \leq \frac{\overline{X} - \mu}{\sigma / \sqrt{n}} \leq z_{\alpha/2} \right) = 1 - \alpha. \]
+If we rearrange this then we can say that there's a $1 - \alpha$ probability that $\mu$ is in the interval $(\overline{X} - z_{\alpha/2} \frac{\sigma}{\sqrt{n}}, \overline{X} + z_{\alpha/2} \frac{\sigma}{\sqrt{n}})$.
+\begin{itemize}
+\item Note that you can decrease the C.I. by increasing $n$ or decreasing $\sigma$.
+\end{itemize}
+
+{\bf Extensions:}
+\begin{itemize}
+\item If the RVs are not normally dist. then use the CLT: if $X_{1}, \dots, X_{n}$ are i.i.d. RVs with $E[X_{i}] = \mu$ and $V[X_{i}] = \sigma^{2}$ then for large $n$ \vspace{-5pt}
+\[
+\overline{X} \stackrel{d}{\approx} N(\mu, \frac{\sigma^{2}}{n}). \vspace{-5pt}
+\]
+\item If $\sigma$ is unknown then, using results 1 and 2 from above, we can construct a $t$-statistic:\vspace{-6pt} 
+\[T = \frac{\frac{\overline{X} - \mu}{\sigma / \sqrt{n}}}{\sqrt{\frac{(n-1)S^{2}}{\sigma^{2}(n-1)}}} = \frac{\overline{X} - \mu}{S / \sqrt{n}} \sim t_{n-1} \vspace{-6pt} \]
+and then use the $t$-distribution with $n-1$ d.o.f. to construct a C.I. Note that the two RVs used to construct this statistic need to be independent. We proved this in lectures. 
+\item It's appropriate to use a $t$-distribution if the sample is taken from a normal population or $n$ is large and the distribution is continuous, symmetric and unimodal. 
+\item One-sided C.I. can be constructed: 
+\begin{align*}
+P \left( \frac{\overline{X} - \mu}{\sigma / \sqrt{n}} \leq z_{\alpha} \right) &= 1 - \alpha \\
+\Rightarrow P \left( \overline{X} - z_{\alpha} \left( \frac{\sigma}{\sqrt{n}} \right) \leq \mu  \right) &= 1 - \alpha.
+\end{align*}
+So $[\overline{x} - z_{\alpha}(\sigma / \sqrt{n}), \infty)$ is a $100(1-\alpha) \%$ C.I. for $\mu$. 
+\end{itemize}
+
+\subsection{Pivots}
+
+\begin{definition}
+A RV is a {\bf pivot} if its distribution is independent of all parameters. 
+\end{definition}
+\begin{itemize}
+\item e.g. for normally distributed data $Z = \frac{\overline{X} - \mu}{\sigma / \sqrt{n}} \sim N(0,1)$ is a pivot. 
+\item Pivots allow us to construct C.I.
+\end{itemize}
+
+\subsection{Specific interval estimates}
+
+\subsubsection{Difference of means} \label{diff. of means}
+
+\begin{itemize}
+\item Take two independent samples: $X_{1}, \dots, X_{n}$ i.i.d. $N(\mu_{X}, \sigma_{X}^{2})$ and $Y_{1}, \dots, Y_{m}$ i.i.d. $N(\mu_{Y}, \sigma_{Y}^{2})$.
+\item If the variances are known then $\frac{\overline{X} - \overline{Y} - (\mu_{X} - \mu_{Y})}{\sqrt{ \sigma_{X}^{2} / n + \sigma_{Y}^{2} / m}} \sim N(0,1)$ gives us a pivot from which we can construct a C.I. 
+\item If the variances aren't known and $n$ and $m$ are large $(20+)$ then you can just replace the population standard deviations with the sample values. 
+\item If $n$ and $m$ are small and we make the assumption that $\sigma_{X} = \sigma_{Y} = \sigma$ then we can construct a $t$-statistic. We know that
+\begin{align*}
+Z &= \frac{\overline{X} - \overline{Y} - (\mu_{X} - \mu_{Y})}{\sqrt{ \sigma^{2} / n + \sigma^{2} / m}} \sim N(0,1), \\
+U &= \frac{(n-1)S_{X}^{2}}{\sigma^{2}} + \frac{(m-1)S_{Y}^{2}}{\sigma^{2}} \sim \chi^{2}_{n+m-2},
+\end{align*}
+and so \vspace{-5pt}
+\begin{align*}
+T &= \frac{Z}{\sqrt{U/(n+m-2)}} \\
+&= \frac{\overline{X} - \overline{Y} - (\mu_{X} - \mu_{Y})}{S_{P}\sqrt{\frac{1}{n} + \frac{1}{m}}} \sim t_{n+m-2} \vspace{-5pt}
+\end{align*} 
+where
+\[
+S_{P} = \sqrt{\frac{(n-1)S_{X}^{2} + (m-1)S_{Y}^{2}}{n+m-2}}.
+\]
+This gives us a RV that's independent of $\sigma$ allowing us to construct confidence intervals for $\mu_{X} - \mu_{Y}$. 
+\item If $n$ and $m$ are small and we can't assume that $\sigma_{X} = \sigma_{Y}$ then we use
+\[ W = \frac{\overline{X}-\overline{Y} - (\mu_{X} - \mu_{Y})}{\sqrt{ S_{X}^{2} / n + S_{Y}^{2} / m}} \]
+and use a computer package to work out the correct $t$-statistic (it's complicated). 
+\item {\bf Paired $t$ test.} If we have $n$ pairs of observations from \emph{dependent} RVs $X$ and $Y$, $(X_{1},Y_{1}), \dots, (X_{n},Y_{n})$, then we can define $D_{i} = X_{i} - Y_{i}$ and it's often reasonable to assume that $D_{i} \sim N(\mu_{D},\sigma_{D}^{2})$. This gives us a one sample problem. A $100(1 - \alpha)\%$ confidence interval for $\mu_{D} = \mu_{X} - \mu_{Y}$ is 
+\[ \overline{d} \pm t_{\alpha/2}(n-1)\frac{s_{d}}{\sqrt{n}}. \]
+\end{itemize}
+
+\subsubsection{Variance}
+
+For a sample $X_{1}, \dots, X_{n}$ from a normal dist. $\frac{(n-1)S^{2}}{\sigma^{2}} \sim \chi_{n-1}^{2}$. This is a pivot. We can therefore find $a = \chi_{1-\alpha/2}^{2}(n-1)$ and $b = \chi_{\alpha/2}^{2}(n-1)$ so that 
+\[ P\left( a \leq \frac{(n-1)}{\sigma^{2}}S^{2} \leq b \right) = 1-\alpha. \]
+A $100(1-\alpha)\%$ C.I. is therefore $[ \frac{(n-1)}{b}s^{2}, \frac{(n-1)}{a}s^{2} ]$. Note the position of $a$ and $b$ in this formula. 
+
+\subsubsection{$\frac{\sigma_{X}^{2}}{\sigma_{Y}^{2}}$} \label{Comp. of var.}
+
+If we have samples of size $n$ and $m$ from two random variables $X \sim N(\mu_{X}, \sigma_{X}^{2})$ and $Y \sim N(\mu_{Y}, \sigma_{Y}^{2})$ respectively then $U = \frac{(n-1)S_{X}^{2}}{\sigma^{2}} \sim \chi^{2}(n-1)$ and $V = \frac{(m-1)S_{Y}^{2}}{\sigma^{2}} \sim \chi^{2}(m-1)$. Therefore
+\[ \frac{V/(m-1)}{U/(n-1)} = \frac{S_{Y}^{2}/\sigma_{Y}^{2}}{S_{X}^{2}/\sigma_{X}^{2}} \sim F(m-1, n-1) \]
+which is a pivot. We can therefore find $c = F_{1-\alpha/2}(m-1, n-1)$ and $d = F_{\alpha/2}(m-1,n-1)$ so that 
+\[ P\left( c \leq \frac{S_{Y}^{2}/\sigma_{Y}^{2}}{S_{X}^{2}/\sigma_{X}^{2}} \leq d \right) = 1-\alpha. \]
+A $100(1-\alpha)\%$ C.I. is therefore 
+\[ \left[ F_{1-\frac{\alpha}{2}}(m-1, n-1) \frac{s_{x}^{2}}{s_{y}^{2}}, F_{\frac{\alpha}{2}}(m-1, n-1) \frac{s_{x}^{2}}{s_{y}^{2}} \right]. \]
+
+\subsubsection{Proportions}
+
+Let $X_{i}$ be a Bernoulli RV with parameter $p$ and $Y$ be the number of successes in $n$ independent observations. By the CLT, for large $n$, 
+\[\frac{Y-np}{\sqrt{np(1-p)}} = \frac{\widehat{p} - p}{\sqrt{p(1-p)/n}} \stackrel{d}{\approx} N(0,1).\]
+By the standard method we get a $100(1-\alpha)\%$ C.I. $\widehat{p} \pm z_{\alpha/2} \sqrt{\frac{\widehat{p}(1-\widehat{p})}{n}}$. Note that in order to obtain this we have had to substitute $\widehat{p}$ for $p$ in the variance component of the formula so this confidence interval is not precise. 
+
+An alternative approach is to require that \vspace{-6pt} 
+\[ \frac{\vert \widehat{p} - p \vert}{\sqrt{\frac{p(1-p)}{n}}} \leq z_{\alpha/2} \]
+\[ \Rightarrow H(p) = (\widehat{p} - p)^{2} - \frac{z_{\alpha/2}^{2} p(1-p)}{n} \leq 0. \vspace{-6pt}\]
+This is a quadratic in $p$. We can find our C.I. by finding the zeros of this equation. This gives \vspace{-6pt}
+\[ \frac{\widehat{p} + \frac{z^{2}}{2n} \pm z \sqrt{\frac{z^{2}}{4n^{2}} + \frac{\widehat{p}(1-\widehat{p})}{n}}}{1 + \frac{z^{2}}{n}} \vspace{-6pt}\]
+(the subscripts have been droped on the $z$). 
+
+\subsubsection{Difference between proportions} \label{diff. between props.}
+
+If $Y_{1} \sim Bi(n_{1},p_{1})$ and $Y_{2} \sim Bi(n_{2},p_{2})$ are independent then using the CLT \vspace{-6pt}
+\[ \frac{\widehat{p}_{1} - \widehat{p}_{2} - (p_{1} - p_{2})}{ \sqrt{ \frac{p_{1}(1-p_{1})}{n_{1}} + \frac{p_{2}(1-p_{})}{n_{2}} } } \stackrel{d}{\approx} N(0,1) \vspace{-6pt} \]
+and a C.I. for $p_{1} - p_{2}$ is \vspace{-6pt}
+\[ \widehat{p}_{1} - \widehat{p}_{2} \pm z_{\alpha/2} \sqrt{ \frac{\widehat{p}_{1} (1 - \widehat{p}_{1})}{n_{1}} + \frac{\widehat{p}_{2} (1 - \widehat{p}_{2})}{n_{2}} }. \vspace{-6pt} \]
+
+\section{Sample Size}
+
+If you want your C.I. to have  a particular size then you need to choose your sample size accordingly. For example, a typical C.I has the form $\widehat{x} \pm \frac{z\sigma}{\sqrt{n}}$ so if you want the C.I. to have size $2\epsilon$ you need \vspace{-6pt}
+\[ \frac{z\sigma}{\sqrt{n}} = \epsilon \quad \Rightarrow \quad n = \frac{z^{2}\sigma^{2}}{\epsilon^{2}}. \vspace{-6pt} \]
+
+\section{Order Statistics}
+
+\begin{definition}
+{\bf Order Statistic.} If If $X_{1}, \dots, X_{n}$ i.i.d. then the $j^{th}$ order statistic, $Y_{j}$ is the $j^{th}$ smallest value in the set $\{X_{1}, \dots, X_{n}\}$. Thus $Y_{1} < \dots < Y_{n}$. Often $Y_{j}$ is denoted $X_{(j)}$. 
+\end{definition}
+
+\subsection{Distribution of order statistics}
+
+If $Y_{1} < \dots < Y_{n}$ are order statistics for a sample from a continuous distribution with c.d.f $F(x)$ and p.d.f $f(x) = F'(x)$ where $x \in(a,b)$, $F(a) = 0$ and $F(b) = 1$ (allowing $a = -\infty$ and $b = \infty$  ) then the distribution fnc. for $Y_{r}$ is \vspace{-6pt}
+\begin{align*}
+G_{r}(y) &= P(Y_{r} \leq y) \\
+&= \sum_{k=r}^{n} \left( \begin{matrix} n \\ k \end{matrix}\right) F(y)^{k} (1 - F(y))^{n-k}   
+\end{align*} 
+and the density fnc. is \vspace{-6pt}
+\[ g_{r}(y) = \frac{n!}{(r-1)! (n-r)!} F(y)^{r-1} (1 - F(y))^{n-r} f(y). \vspace{-6pt} \]
+Obtaining this requires doing some work with the terminals of the summation and the binomial coefficient. 
+
+{\bf Confidence intervals.} If the MLE of a parameter equals an order statistic then you may be able to use the distribution of the order statistic to construct a C.I. for the parameter. For example suppose that $\widehat{\theta} = Y_{4}$ and that $1 - c^{4} = P(c\theta < Y_{4} < \theta)$. Then $1 - c^{4} = P(Y_{4} < \theta < \frac{Y_{4}}{c})$ and we can choose $c$ to get the C.I. that we want. 
+
+\section{Percentiles}
+
+\subsection{Percentiles}
+
+A point estimate of the $100p^{th}$ percentile of the distribution of a RV is the $r^{th}$ order statistic, $Y_{r}$, where $r = (n+1)p$. If this is not an integer then take a weighted average of the adjacent order statistics (e.g. If $r = 3.2$ then use $0.8 \times Y_{3} + 0.2 \times Y_{4}$. The derivation of this result is as follows:
+\begin{itemize}
+\item Take any RV $X$ with order statistics $Y_{1}, \dots, Y_{n}$. $F(X) \sim U(0,1)$ and $F(Y_{1}), \dots, F(Y_{n})$ are order statistics. 
+\item Let $W_{i} = F(Y_{i})$ so $W_{i}$ are order statistics from $U(0,1)$. The p.d.f. of $W_{r}$ is therefore \vspace{-6pt}
+\[ 
+h_{r}(w) = \frac{n!}{(r-1)!(n-r)!}w^{r-1}(1-w)^{n-r}. \vspace{-6pt}
+\]
+\item To evaluate $E(W_{r})$ we write down the integral and manipulate the integrand into a beta distribution to get the result that $E(W_{r}) = \frac{r}{n+1}$. 
+\item  $E[F(Y_{r})] = \frac{r}{n+1}$ so $Y_{r}$ gives a point estimate of the $100(\frac{r}{n+1})^{th}$ percentile. To find the $100p^{th}$ percentile choose $r = (n+1)p$. 
+\end{itemize}
+
+\subsection{Confidence intervals for percentiles}
+
+{\bf Confidence intervals for the median.} Let the median be $m$. Then the probability that that median is between the $i^{th}$ and $j^{th}$ order statistics is the probability that at least $i$ order statistics are less than the median, and no more than $j-1$ order statistics are less than the median. That is 
+\begin{align*}
+P(Y_{i} < m < Y_{j}) = \; &P(i \text{ observations} < m) + \dots \\
+&+ P(j-1 \text{ observations} < m)\\
+= \; &\sum_{k=i}^{j-1} \left( \begin{matrix} n \\ k \end{matrix}\right) \left( \frac{1}{2} \right)^{k} \left( \frac{1}{2} \right)^{n-k}. 
+\end{align*}
+The C.I. is $(y_{i}, y_{j})$. We use round brackets because we have strict inequalities in the probability expression. 
+
+{\bf Implementation.} If, for example, you want a $95\%$ C.I.  and your sample size is $n$, use a binomial table or statistical software to work out which order statistics correspond to percentiles $2.5$ and $97.5$ (in R use `qbinom$(x,n,\frac{1}{2})$' where $x$ is the percentile that you're after). Once you have these check the exact probability that the interval gives you and adjust the end points if necessary. 
+
+{\bf Confidence intervals for other percentiles.} We can use exactly the same approach to construct C.I. for other percentiles by just replacing $\frac{1}{2}$ with $p$ in the formula. If $\pi_{p}$ is the $p^{th}$ percentile then \vspace{-6pt}
+\[
+P(Y_{i} < \pi_{p} < Y_{j}) = \sum_{k=i}^{j-1} \left( \begin{matrix} n \\ k \end{matrix}\right) \left( p \right)^{k} \left( 1-p \right)^{n-k}.  \vspace{-6pt}
+\] 
+
+{\bf Normal approximation.} Since these C.I. are based on binomial distributions we can use normal approximations to calculate the probabilities:
+\begin{align*}
+P(Y_{4} < \pi_{p} < Y_{10}) &= P(4 \leq X \leq 9) \\
+&= P(3.5 < V < 9.5) 
+\end{align*}
+where $X \sim Bi(n, p)$, $V \sim N(np, np(1-p))$ and $n$ is the sample size. 
+
+\section{Maximum Likelihood}
+
+The central limit theorem gives us the distribution of the mean of many RVs. In this section we use the maximum likelihood method to construct distributions of other statistics. 
+
+\subsection{Large sample distributions}
+
+\begin{theorem}
+Let $X_{1}, \dots, X_{n}$ be an iid sample from a distribution with p.d.f. or p.m.f. $f(x;\theta)$ whose support does not depend on $\theta$. If $\widehat{\theta}$ is a maximum likelihood estimate of $\theta$ then, approximately, \vspace{-6pt}
+\[
+\widehat{\theta} \sim N\Bigg( \theta, \frac{1}{-nE\left[ \frac{\partial^{2} \ln f(x)}{\partial\theta^{2}} \right]} \Bigg).
+\vspace{+6pt} \]
+\end{theorem}
+
+\begin{theorem}
+{\bf Rao-Cr\'amer lower bound.} Let $X_{1}, \dots, X_{n}$ be an iid sample from a distribution with p.d.f or p.m.f. $f(x;\theta)$ whose support does not depend on $\theta$. Then, under unstated regularity conditions, if $Y = u(X_{1}, \dots, X_{n})$ is an unbiased estimator of $\theta$, \vspace{-6pt}
+\[
+V(Y) \geq \frac{-1}{nE\left[ \frac{\partial^{2} \ln f(x)}{\partial\theta^{2}} \right]}.
+\vspace{+6pt} \]
+\end{theorem}
+
+\begin{definition} 
+{\bf Efficiency.} The efficiency of an estimator is the ratio of the Rao-Cr\'amer lower bound to the variance of the estimator. 
+\end{definition}
+
+\section{Bayesian methods}
+
+In the classical statistical methods that we have considered so far it has been an implicit assumption that parameters have one true value. In Bayesian methods we allow parameters to vary. They have distributions. 
+
+\subsection{Basic method}
+
+Bayes' theorem provides that if $\theta_{1}, \dots, \theta_{m}$ is a partition of our sample space (the possible values that the parameter of interest can take) and $A$ is an event then \vspace{-6pt}
+\[
+P(\theta_{k} \vert A) = \frac{P(\theta_{k}) P(A \vert \theta_{k})}{\sum_{i=1}^{m} P(\theta_{i}) P(A \vert \theta_{i})}. \vspace{-6pt}
+\]
+Terminology:
+\begin{itemize}
+\item $P(\theta_{k})$ is called the {\bf prior probability} of $\theta_{k}$. 
+\item $P(\theta_{k} \vert A)$ is called the {\bf posterior probability} of $\theta_{k}$.
+\end{itemize}
+To make a Bayesian estimate of $\theta$ we work out the distribution of $\theta \vert A$. Our estimate can be the mean, median or mode of $\theta$ given $A$, called the {\bf posterior mean, median or mode}. The mode is the value of $\theta$ that maximises $P(\theta \vert A)$.
+
+Compare this to a MLE. To find the MLE of $\theta$ we would calculate $P(A \vert \theta_{i})$ for all $i$ and our MLE would be the value of $\theta \in \{ \theta_{i} \}_{i \in \{ 1, \dots, m\}}$ that maximises $P(A \vert \theta_{i})$.
+
+{\bf Comments.} There are three major issues with Bayesian methods.
+\begin{itemize}
+\item First, Bayesian estimation requires that the prior distribution is known or assumed. If people assume different prior distributions then different conclusions can result from the same data. 
+\item Second, many people believe that the state of nature doesn't change over time. Allowing parameters to have distributions contradicts this. 
+\item The denominator in Bayes' theorem can be intractable. 
+\end{itemize}
+
+\subsection{General method}
+
+Let $h(\theta)$ be the prior p.d.f. of $\theta$ and $g(y \vert \theta)$ be the conditional p.d.f. of $Y$ given $\theta$. Then the marginal p.d.f. of $Y$ is \vspace{-6pt}
+\[
+k(y) = \int_{-\infty}^{\infty} g(y\vert \theta) h(\theta) \: d\theta. \vspace{-6pt}
+\]
+The conditional p.d.f. of $\theta$ given $Y=y$ is \vspace{-6pt}
+\[
+k(\theta \vert y) = \frac{g(y \vert \theta) h(\theta)}{k(y)}. \vspace{-6pt}
+\]
+
+To determine which method to use to estimate $\theta$  (e.g. mean, median or mode) we can specify a loss function. The mean minimises the mean squared error of the parameter estimate. The median minimises the mean magnitude of the error of the parameter estimate. 
+
+\subsection{Examples}
+
+The following examples are intended to illustrate useful methods for finding the joint distribution, $k(y)$, and the posterior distribution, $k(\theta \vert y)$.
+
+{\bf Determining the joint distribution}
+
+Suppose that \vspace{-10pt}
+\begin{align*} 
+g(y \vert \theta) &= \begin{pmatrix} n \\ y \end{pmatrix} \theta^{y} (1 - \theta)^{n-y}, \quad y = 0, \dots, n, \\
+h(\theta) &= \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \theta^{\alpha -1} (1-\theta)^{\beta - 1}, \quad 0 < \theta < 1, \\
+\Rightarrow k(y, \theta) &= \begin{pmatrix} n \\ y \end{pmatrix} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \theta^{y + \alpha -1} (1 - \theta)^{n-y + \beta - 1} \\
+\Rightarrow k(y) &= \int_{0}^{1} \begin{pmatrix} n \\ y \end{pmatrix} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \theta^{y + \alpha -1} (1 - \theta)^{n-y + \beta - 1} \: d\theta \\
+&= \begin{pmatrix} n \\ y \end{pmatrix} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \int_{0}^{1} \theta^{y + \alpha -1} (1 - \theta)^{n-y + \beta - 1} \: d\theta. 
+\end{align*}
+To work out $k(y)$ we note that the integrand in the last line looks like a beta distribution without its constant (parameters are $y + \alpha$ and $n - y + \beta$). If we multiply the integrand by the appropriate constant the integral goes to one. Multiplying the factor outside the integrand by the inverse of this constant gives \vspace{-5pt}
+\[ 
+k(y) = \begin{pmatrix} n \\ y \end{pmatrix} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\Gamma(y + \alpha)\Gamma(n - y + \beta)}{\Gamma(\alpha + n + \beta)}. \vspace{-5pt}
+\]
+Thus we get the posterior distribution: \vspace{-5pt}
+\[ 
+k(\theta \vert y) = \frac{\Gamma(\alpha + n + \beta)}{\Gamma(y + \alpha)\Gamma(n - y + \beta)} \theta^{y + \alpha -1} (1 - \theta)^{n-y + \beta - 1} \vspace{-5pt}
+\]
+for $0 < \theta < 1$. This is a beta distribution with parameters $y + \alpha$ and $n - y + \beta$. 
+
+{\bf Determining the posterior distribution}
+
+Suppose that $X_{i} \sim N(\theta, \sigma^{2})$ with $\sigma^{2}$ known and that $\theta \sim N(\theta_{0}, \sigma_{0}^{2})$. Then $Y = \overline{X} \sim N(\theta, \frac{\sigma^{2}}{n})$ and \vspace{-10pt}  
+\begin{align} 
+k(\theta \vert y) &= \frac{g(y \vert \theta) h(\theta)}{k(y)} \notag \\
+&\propto \exp \left[ -\frac{(y - \theta)^{2}}{2\sigma^{2}/n} - \frac{(\theta - \theta_{0})^{2}}{2\sigma_{0}^{2}} \right] \label{ignore k}\\ 
+&= \exp \left\{ \frac{\left[ \theta - \frac{y\sigma_{0}^{2} + \theta_{0}\sigma^{2}/n}{\sigma_{0}^{2} + \sigma^{2}/n} \right]^{2}}{ \frac{2\sigma^{2}\sigma_{0}^{2}/n}{\sigma_{0}^{2} + \sigma^{2}/n} } \right\} \times \exp(C) \label{get normal}\\ 
+&\propto \exp \left\{ \frac{\left[ \theta - \frac{y\sigma_{0}^{2} + \theta_{0}\sigma^{2}/n}{\sigma_{0}^{2} + \sigma^{2}/n} \right]^{2}}{ \frac{2\sigma^{2}\sigma_{0}^{2}/n}{\sigma_{0}^{2} + \sigma^{2}/n} } \right\} \label{drop const}\\
+\Rightarrow k(\theta \vert y) &\sim N \left( \frac{y\sigma_{0}^{2} + \theta_{0}\sigma^{2}/n}{\sigma_{0}^{2} + \sigma^{2}/n}, \frac{\sigma^{2}\sigma_{0}^{2}/n}{\sigma_{0}^{2} + \sigma^{2}/n}  \right). \notag \vspace{-10pt}    
+\end{align}
+Note that in equation \eqref{get normal} $C$ is a function that's independent of $\theta$. Some explanation for this derivation:
+\begin{itemize}
+\item In equation \eqref{ignore k} we treat $k(y)$ as a constant because it does not depend on $\theta$ and ignore the constants in the normal p.d.f.s $g(y \vert \theta)$ and $h(\theta)$. 
+\item In equation \eqref{get normal} we rearrange the exponent to take the form of a normal distribution. So that this works we need to dispose of some parts of the expression. We use $C$ to do this. It is critical that $C$ is not a function of $\theta$. 
+\item From equation \eqref{drop const} we can deduce that $\theta \vert Y$ is normally distributed. Simplifying the example, if \vspace{-10pt}
+\[
+k(\theta \vert y) \propto \exp \left( \frac{(\theta - \alpha)^{2}}{2\beta^{2}} \right)  \vspace{-10pt}
+\]
+then \vspace{-5pt}
+\begin{align*}
+\int_{-\infty}^{\infty} D e^{\frac{(\theta - \alpha)^{2}}{2\beta^{2}} } \: d\theta &= 1 = \int_{-\infty}^{\infty} \frac{1}{\beta\sqrt{2\pi}} e^{\frac{(x - \alpha)^{2}}{2\beta^{2}} } \: dx \\
+\Rightarrow \quad D &= \frac{1}{\beta\sqrt{2\pi}}. \vspace{-10pt}
+\end{align*} 
+So $\theta \vert Y \sim N(\alpha, \beta^{2})$. \vspace{-5pt}
+\end{itemize}
+
+\subsection{Interval estimates}
+
+We find interval estimates by finding $u(y)$ and $v(y)$ so that \vspace{-10pt}
+\[
+\int_{u(y)}^{v(y)} k(\theta \vert y) \: d\theta = 1 - \alpha. \vspace{-5pt}
+\]
+If we know the distribution of $\theta \vert Y$ this is straightforward. 
+
+\section{Hypothesis Testing}
+
+\subsection{Hypothesis testing basics}
+
+{\bf Hypotheses.} A hypothesis test is based on a null hypothesis ($H_{0}$) and an alternative hypothesis ($H_{1}$). We assess whether sample observations provide us with enough evidence to reject the null hypothesis. Our alternative hypothesis can be one or two sided. For example, if $H_{0}$ is $x = x_{0}$ then $H_{1}$ could be $x > x_{0}$, $x < x_{0}$ (both one-sided), or $x \neq x_{0}$ (two-sided). 
+ 
+We can also classify hypotheses according to whether they are \emph{simple} or \emph{complex}. A simple hypothesis is one that provides a full specification of the distribution that we're working with. Under a composite hypothesis the distribution is not fully specified. For example, if the distribution of our sample observations depends on a parameter $p$, $p = 1$ would be a simple hypothesis and $p < 1$ would be a composite hypothesis. With the exception of the likelihood ratio test in section \ref{LR test}, all the null hypotheses that we look at are simple. 
+
+{\bf Types of errors.} We can make two types of errors when conducting a hypothesis test. 
+\begin{itemize}
+\item {\bf Type I error:} Reject $H_{0}$ when it's true. 
+\item {\bf Type II error:} Fail to reject $H_{0}$ when $H_{1}$ is true.
+\end{itemize}
+The {\bf significance level}, denoted $\alpha$, of a test is the probability of making a type I error. If the probability of making a type II error is $\beta$, then the {\bf power} of a test is $1 - \beta$. When conducting a hypothesis we are generally concerned with the significance level: we reject $H_{0}$ if the significance level is sufficiently low. 
+
+{\bf Equivalent testing methods.} Suppose that $Y \sim Bi(n,p)$, $H_{0}: p = p_{0}$, $H_{1}: p > p_{0}$ and $\alpha = 0.05$. There are three ways of conducting this hypothesis test. All are based on the fact that, for large $n$, if $H_{0}$ is true\vspace{-6pt}
+\[
+Z = \frac{Y - np_{0}}{\sqrt{np_{0}(1-p_{0}}} \sim N(0,1). \vspace{-6pt}
+\]
+The three equivalent approaches are that we reject $H_{0}$ if:
+\begin{itemize}
+\item $y > np_{0} + z_{0.05}\sqrt{np_{0}(1-p_{0})}$,   
+\item $z > z_{0.05}$,
+\item $P(Z > z) < 0.05$. 
+\end{itemize} 
+If the alternative hypothesis was $H_{1}: p \neq p_{0}$ then we would reject $H_{0}$ if 
+\begin{itemize}
+\item $y > np_{0} + z_{0.025}\sqrt{np_{0}(1-p_{0})}$ or $y < np_{0} - z_{0.025}\sqrt{np_{0}(1-p_{0})}$,   
+\item $\lvert z \rvert > z_{0.025}$,
+\item $P(Z > \lvert z \rvert ) < 0.025$. 
+\end{itemize} 
+The third testing method utilises the {\bf p-value}: the probability of getting an observation at least as extreme as that observed.  
+
+\subsection{Testing one proportion}
+
+See the example in the previous section. 
+
+\subsection{Comparing two proportions}
+
+Recall from section \ref{diff. between props.} that if we have $Y_{1}$ successes from sample size $n_{1}$ with probability of success $p_{1}$ and $Y_{2}$ successes from sample size $n_{2}$ with probability of success $p_{2}$, then \vspace{-6pt}
+\[
+\frac{Y_{1}/n_{1} - Y_{2}/n_{2} - (p_{1} - p_{2})}{\sqrt{ p_{1}(1-p_{1})/n_{1} + p_{2}(1-p_{2})/n_{2}}} \stackrel{d}{\approx} N(0,1). \vspace{-6pt}
+\]
+Letting $\widehat{p}_{1} = y_{1}/n_{1}$, $\widehat{p}_{2} = y_{2}/n_{2}$ and $\widehat{p} = (y_{1}+ y_{2})/(n_{1}+n_{2})$, and using the assumptions of $H_{0}$ we get the statistic \vspace{-6pt}
+\[
+\frac{\widehat{p}_{1} - \widehat{p}_{2}}{\sqrt{ \widehat{p}(1-\widehat{p})(1/n_{1} + 1/n_{2})}}. \vspace{-6pt}
+\]
+We perform our hypothesis test using this. 
+
+\subsection{Test of one mean}
+
+When making hypothesis tests about means we use one of two test statistics. If the variance is known we use \vspace{-6pt}
+\[
+\overline{X} \stackrel{d}{\approx} N \left( \mu, \frac{\sigma^{2}}{n} \right). \vspace{-6pt}
+\]
+If the variance is unknown and the sample is from $N(\mu, \sigma^{2})$ then we use
+\[
+T = \frac{\overline{X} - \mu}{s / \sqrt{n}}. \vspace{-6pt}
+\]
+Recall that this statistic has $n-1$ degrees of freedom.
+
+\subsection{Test of variance}
+
+For a hypothesis test about the variance we use the following statistic: 
+\[
+\frac{(n-1)S^{2}}{\sigma^{2}} \sim \chi^{2}(n-1). \vspace{-6pt}
+\]
+$\sigma^{2}$ takes the value it's given under $H_{0}$. 
+
+\subsection{Comparing two means}
+
+As discussed in section \ref{diff. of means}, if $X \sim N(\mu_{X}, \sigma^{2})$ and $Y \sim N(\mu_{Y}, \sigma^{2})$ then, under $H_{0} : \mu_{X} = \mu_{Y}$, a statistic based on the difference of the two means is \vspace{-6pt}
+\[
+T = \frac{\overline{X} - \overline{Y}}{S_{P} \sqrt{1/n + 1/m}} \sim t(n+m-2), \vspace{-6pt}
+\]
+where
+\[
+S_{P} = \sqrt{\frac{(n-1)S_{X}^{2} + (m-1)S_{Y}^{2}}{n+m-2}}. \vspace{-6pt}
+\]
+Use this statistic for your hypothesis test. Note that the variances of $X$ and $Y$ are the same. If you don't want to make this assumption then use a computer and don't specify that the variances are equal (which is normally the default). 
+
+\subsection{Comparing variances}
+
+Use the statistic discussed in section \ref{Comp. of var.} to do a hypothesis test involving the variances of $X \sim N(\mu_{X}, \sigma_{X}^{2})$ and $Y \sim N(\mu_{Y}, \sigma_{Y}^{2})$.  
+
+\subsection{Sign test: distribution free test of one median} \label{sign test}
+
+The technique described in this section allows us to conduct a hypothesis test about the mean of a random variable without making an assumption about its distribution. This is useful if our sample size is too small to invoke the central limit theorem and we don't want to assume normality. 
+
+If $X$ is a \emph{continuous} random variable with median $m$ the hypothesis test is \vspace{-6pt}
+\[
+H_{0}: m = m_{0}, \quad H_{1}: m \neq m_{0} \vspace{-6pt}
+\]
+(one sided tests possible too). Take a random sample $X_{1}, \dots, X_{n}$ and let $Y$ be the number of negative elements in the set $\{X_{1} - m_{0}, \dots, X_{n} - m_{0} \}$. Under $H_{0}$, $Y \sim Bi(n, \frac{1}{2})$. 
+
+If $Y=y$ then the p-value for the test is $P(Y \geq y) = 1 - P(Y\leq y - 1)$. 
+
+\subsection{Wilcoxon test: distribution free test of one median}
+
+This test is similar to the sign test but more powerful (it uses more information). It also requires the \emph{additional assumption} that the distribution is \emph{symmetric} (as well as continuous). Using the same notation as in section \ref{sign test}, the hypothesis test is \vspace{-6pt}
+\[
+H_{0}: m = m_{0}, \quad H_{1}: m \neq m_{0} \vspace{-6pt}
+\]
+(one sided tests possible too). 
+
+{\bf Test statistic.} To construct the test statistic rank the elements of the set $U = \{ \vert X_{1} - m_{0} \vert, \dots, \vert X_{n} - m_{0} \vert \}$ from least to greatest. The \emph{Wilcoxon statistic}, $W$, is the sum of the signs times the ranks of the elements of $U$. 
+
+Since we have assumed that the distribution is continuous it should never be the case that $\vert x_{i} - m_{0} \vert = \vert x_{j} - m_{0} \vert$ for $i \neq j$ or that $x_{i} = m_{0}$ for any $i$. If $x_{i} = m_{0}$ we disregard observation $i$ (and reduce the sample size by one). If $\vert x_{i} - m_{0} \vert = \vert x_{j} - m_{0} \vert$ we assign observations $i$ and $j$ the average of the ranks of $\vert x_{i} - m_{0} \vert$ and $\vert x_{j} - m_{0} \vert$. 
+
+{\bf Distribution of $W$ under $H_{0}$.} To get the distribution we observe that $W$ is the sum of the integers $1, \dots, n$, each with a positive or negative sign. When $H_{0}$ is true, \vspace{-6pt}
+\[
+P(X_{i} < m_{0}) = P(X_{i} > m_{0}) = \frac{1}{2}, \quad i = 1, \dots, n. \vspace{-6pt}
+\]  
+Furthermore the signs of the elements of $U$ are independent because $X_{1}, \dots, X_{n}$ are independent. Since $X$ has a symmetric distribution, it is intuitive that $W$ has the same distribution as $V = \sum_{i=1}^{n} V_{i}$ where $V_{1}, \dots, V_{n}$ are independent and $P(V_{i} = i) = P(V_{i} = -i) = \frac{1}{2}$ $\forall$ $i$. $E[V] = 0$ and $V[V] = \sum_{i=1}^{n} V[V_{i}] = \sum_{i=1}^{n} i^{2} = \frac{n(n+1)(n+2)}{6}$. Using a more general form of the central limit theorem (still assuming that $H_{0}$ is true) we get the statistic \vspace{-6pt}
+\[
+Z = \frac{W - 0}{\sqrt{n(n+1)(2n+1)/6}} \sim N(0,1). \vspace{-6pt}
+\]
+
+{\bf Note:} There are other versions of this test that use a different statistic. R uses the sum of the positive ranks. 
+
+\subsection{Two sample Wilcoxon test: distribution free comparison of two medians}
+
+Take two random samples $X_{1}, \dots, X_{n_{1}}$ and $Y_{1}, \dots, Y_{n_{2}}$ from two different populations with medians $m_{X}$ and $m_{Y}$ respectively. The hypothesis test is \vspace{-6pt}
+\[
+H_{0}: m_{X} = m_{Y}, \quad H_{1}: m_{X} \neq m_{Y} \vspace{-6pt}
+\]
+(one sided tests possible too). As in the one sample case, we assume that distributions are continuous and symmetric. We \emph{also assume} that the two distributions have \emph{similar shapes}. 
+
+{\bf Test statistic.} Rank the combined sample from least to greatest. If there are ties then assign the average of the ranks associated with the tied values to each of them. The test statistic $W$ is the sum of the ranks of $Y_{1}, \dots, Y_{n_{2}}$.
+
+{\bf Critical regions.} If $H_{0}$ is false we would expect $W$ to be much larger, or much smaller, than it would be if $H_{0}$ was true. If the alternative hypothesis was one-sided, say $\quad H_{1}: m_{X} < m_{Y}$, then in order to reject $H_{0}$ we would want $W$ to be much larger than be would expect it to be under $H_{0}$. 
+
+{\bf Distribution of $W$ under $H_{0}$.} We derived the distribution of $W$ very loosely. The result is that \vspace{-6pt}
+\begin{align*}
+\mu_{X} &= \frac{n_{2}(n_{1} + n_{2} + 1)}{2}, \\
+V[W] &= \frac{n_{2}(n_{1} + n_{2} + 1)}{2}, \\
+Z &= \frac{W - n_{2}(n_{1} + n_{2} + 1)/2}{\sqrt{n_{1}n_{2}(n_{1} + n_{2} + 1)/12}} \stackrel{d}{\approx} N(0,1). \vspace{-6pt}
+\end{align*}
+In R the command is `wilcox.test$(X,Y,\text{mu}=0)$'. 
+
+\subsection{Goodness of Fit Tests}
+
+For intuition, we construct a simple goodness of fit test for data that we assume can be modeled with a binomial distribution. We then state a more general test, which we didn't prove the validity of. 
+
+{\bf Some intuition.} Let $Y_{1} \sim Bi(n,p_{1})$ so that \vspace{-6pt}
+\[
+Z = \frac{Y_{1} - np_{1}}{\sqrt{np_{1}(1 - p_{1})}} \stackrel{d}{\approx} N(0,1) \vspace{-12pt}
+\]  
+for sufficiently large $n$. If we set $Q_{1} = Z^{2}$ then $Q_{1} \stackrel{d}{\approx} \chi^{2}(1)$ and
+\[
+Q_{1} = \frac{(Y_{1} - np_{1})^{2}}{np_{1}} + \frac{(Y_{2} - np_{2})^{2}}{np_{2}} \vspace{-6pt}
+\]  
+where $Y_{2} = n - Y_{1}$ and $p_{2} = 1 - p_{1}$. This is a weighted average of the squared difference of the number of successes and failures to the expected value of each. We can conduct a hypothesis test about the value of $p_{1}$. This approximation is good if $np_{i} \geq 5$ for all $i$. If the hypothesised value of $p_{1}$ is small then $Q_{1}$ is small.      
+
+{\bf Generalisation.} This approach generalises to an experiment with $n$ trials, each with $k$ mutually exclusive and exhaustive outcomes, $A_{1}, \dots, A_{k}$. Let $p_{i} = P(A_{i})$ so $\sum_{i=1}^{k} p_{i} = 1$ and let $Y_{i}$ be the number of times that the outcome of the experiment is $A_{i}$. $E[Y_{i}] = np_{i}$. Then our test statistic is \vspace{-6pt}
+\[
+Q_{k-1} = \sum_{i=1}^{k} \frac{(Y_{i}-np_{i})^{2}}{np_{i}} \stackrel{d}{\approx} \chi^{2}(k-1). \vspace{-6pt}
+\]  
+This approximation is good if $np_{i} \geq 5$ for all $i$. For the hypothesis test we specify the value of each $p_{i}$ for $H_{0}$ and evaluate $Q_{k-1}$ assuming $H_{0}$ is true. If $H_{0}$ is true, $Q_{k-1}$ is small. 
+
+\subsection{Contingency tables}
+
+\subsubsection{Test for homogeneity}
+
+In this section we describe a test for whether two or more multinomial distributions are equal. 
+
+Suppose that each of two independent experiments can result in one of $k$ mutually exclusive and exhaustive events $A_{1}, \dots, A_{k}$ and let $p_{ij} = P(A_{i})$ for $i = 1, \dots, k$ and $j = 1, 2$. $j$ denotes the experiment number. Also let the number of trials in the experiments be $n_{1}$ and $n_{2}$, and let $Y_{1j}, \dots, Y_{kj}$ be the frequency of each outcome in experiment $j$. Then \vspace{-5pt}
+\[
+\sum_{j=1}^{2} \sum_{i=1}^{k} \frac{(Y_{ij} - n_{j}p_{ij})^{2}}{n_{j}p_{ij}} \stackrel{d}{\approx} \chi^{2}(2k-2). \vspace{-5pt}
+\]
+If you want to test the null hypothesis $H_{0}: p_{11}=p_{12}, p_{21}=p_{22}, \dots, p_{k1}=p_{k2}$ (the alternative is $H_{1}: \text{ not } H_{0}$) then we can estimate the relative frequency of each category under $H_{0}$ using \vspace{-5pt}
+\[
+p_{i1} = p_{i2} = \frac{Y_{i1} + Y_{i2}}{n_{1} + n_{2}}. \vspace{-5pt}
+\]
+Then the test statistic is \vspace{-5pt}
+\[
+Q=\sum_{j=1}^{2} \sum_{i=1}^{k} \frac{\left( Y_{ij} - n_{j}\left( \frac{Y_{i1} + Y_{i2}}{n_{1} + n_{2}}\right) \right)^{2}}{n_{j}\left( \frac{Y_{i1} + Y_{i2}}{n_{1} + n_{2}}\right)} \stackrel{d}{\approx} \chi^{2}(k-1) \vspace{-5pt}
+\]
+and the critical region is $q \geq \chi_{\alpha}^{2}(k-1)$. 
+
+\subsubsection{Test of independence of attributes of classification}
+
+Contingency tables can be used to test whether two categorical variables are independent. For example, suppose that observations in a sample are associated with two attributes, which can takes categories $A_{1}, \dots, A_{k}$ and $B_{1}, \dots, B_{h}$ (each set being mutually exclusive and exhaustive). Let $p_{ij} = P(A_{i} \cap B_{j})$, $p_{i.} = \sum_{j=1}^{h} p_{ij}$ and $p_{.j} = \sum_{i=1}^{k} p_{ij}$. The hypothesis test is \vspace{-5pt}
+\begin{align*}
+H_{0}&: p_{ij} = p_{i.}p_{.j}, \; i= 1, \dots k, \; j = 1, \dots, h, \\
+H_{1}&: \text{ not } H_{0}. \vspace{-5pt}
+\end{align*}
+Let $Y_{ij}$ be the number of observations with characteristics $A_{i}$ and $B_{j}$. A measure of goodness of fit for given $p_{ij}$ is \vspace{-5pt} 
+\[
+Q = \sum_{i=1}^{k} \sum_{j=1}^{h} \frac{(Y_{ij} - np_{ij})^{2}}{np_{ij}}. \vspace{-5pt}
+\]
+Under $H_{0}$ we can estimate $p_{ij}$ using \vspace{-5pt} 
+\[
+\widehat{p}_{ij} = \widehat{p}_{i.} \widehat{p}_{.j} = \frac{Y_{i.}Y_{.j}}{n^{2}}.  \vspace{-5pt} 
+\]
+Substituting this into $Q$ we get \vspace{-5pt} 
+\[
+Q = \sum_{i=1}^{k} \sum_{j=1}^{h} \frac{(Y_{ij} - \frac{Y_{i.}Y_{.j}}{n})^{2}}{\frac{Y_{i.}Y_{.j}}{n}} \sim \chi^{2} ((k-1)(h-1)). \vspace{-5pt}
+\]
+We didn't discuss why this statistic has a $\chi^{2}$ distribution. 
+
+\subsection{Analysis of variance}
+
+ANOVA is used to compare the means of more than two populations.
+
+\subsubsection{One factor ANOVA}
+ 
+Suppose that there is a factor affecting the outcome of an experiment which can take $m$ values ($m > 2$). If $i$ is a category or value that the factor can take we take a sample of size $n_{i}$ with the factor equal to $i$. We label this sample $X_{i1},\dots, X_{in_{i}}$ and assume that $X_{ij} \sim N(\mu_{i}, \sigma^{2})$ for all $j \in \{1, \dots, n_{i} \}$. Note that we assume that all samples have a normal distribution, that the observations in each sample are i.i.d. and that the variance of the observations is independent of the value that the factor of interest takes. 
+
+We model the means as \vspace{-5pt}
+\[
+\mu_{ij} = \mu + \alpha_{i}, \text{ where } \sum_{i=1}^{m} \alpha_{i} = 0. \vspace{-5pt}
+\]
+Note that R assumes that $\alpha_{1} = 0$ rather than assuming that $\sum_{i=1}^{a} \alpha_{i} = 0$.
+
+{\bf Testing normality assumption.} To test the normality assumption we can fit a linear model to the data with the with a binary explanatory variable for each category or value that the factor under consideration can take. To test the normality assumption extract the residuals from this model and plot them to compare their distribution with a normal distribution.  
+
+{\bf Hypothesis.} Our hypothesis is $H_{0}: \mu_{1} = \dots = \mu_{m} = \mu$, with $\mu$ unspecified, against all other alternative hypotheses $H_{1}$. 
+
+{\bf Construction of test statistic.} The mean of sample $i$ is \vspace{-5pt}
+\[
+\overline{X}_{i.} = \frac{1}{n_{i}} \sum_{i=1}^{n_{i}} X_{ij} \vspace{-5pt}
+\]
+and the mean over all observations (the \emph{grand mean}) is \vspace{-5pt} 
+\[
+\overline{X}_{..} = \frac{1}{n} \sum_{i=1}^{m}\sum_{j=1}^{n_{i}} X_{ij} \vspace{-5pt} 
+\]
+where $n = \sum_{i=1}^{m} n_{i}$ is the total number of observations. 
+
+In order to construct our test we decompose the sum of squared errors with respect to the grand mean (the `\emph{total sum of squares}'). \vspace{-5pt}
+\begin{align*} 
+SS(TO) &= \sum_{i=1}^{m} \sum_{j=1}^{n_{i}} (X_{ij} - \overline{X}_{..})^{2} \\
+&= \sum_{i=1}^{m} \sum_{j=1}^{n_{i}} (X_{ij} - \overline{X}_{i.})^{2} + \sum_{i=1}^{m} n_{i}(\overline{X}_{i.} - \overline{X}_{..})^{2} \\
+&= SS(E) + SS(T).    
+\end{align*} 
+$SS(E)$ is called the `\emph{error sum of squares}' (the sum of squares within groups) and $SS(T)$ is called the `\emph{between-treatment sum of squares}.'
+
+Under $H_{0}$ the combined data is a sample of size $n$ from $N(\mu, \sigma^{2})$, so $\frac{SS(TO)}{n-1}$ is an unbiased estimator of $\sigma^{2}$ and $\frac{SS(TO)}{\sigma^{2}} \sim \chi^{2}(n-1)$. Similarly, for the $i^{th}$ sample \vspace{-5pt}
+\[
+W_{i} = \frac{\sum_{j=1}^{n_{i}} (X_{ij} - \overline{X}_{i.})^{2} }{n_{i} - 1} \vspace{-5pt}
+\] 
+is an unbiased estimator of $\sigma^{2}$ and $\frac{(n_{i} - 1)W_{i}}{\sigma^{2}} \sim \chi^{2}(n_{i}-1)$. Since the samples are independent, and $\sum_{i=1}^{m} (n_{i} - 1) = m$, \vspace{-5pt}
+\[
+\sum_{i=1}^{m} \frac{(n_{i} - 1)W_{i}}{\sigma^{2}} = \frac{SS(E)}{\sigma^{2}} \sim \chi^{2}(n-m). \vspace{-5pt}
+\]
+Since $\frac{SS(TO)}{\sigma^{2}} \sim \chi^{2}(n-1)$, $\frac{SS(E)}{\sigma^{2}} \sim \chi^{2}(n-m)$ and \vspace{-5pt}
+\[
+\frac{SS(TO)}{\sigma^{2}} = \frac{SS(E)}{\sigma^{2}} + \frac{SS(T)}{\sigma^{2}} \vspace{-5pt}
+\]
+it follows (by a theorem which we didn't prove) that $\frac{SS(T)}{\sigma^{2}} \sim \chi^{2}(m-1)$. 
+
+The key facts which we use to construct our statistic are that $\frac{SS(E)}{n-m}$ is an unbiased estimator of $\sigma^{2}$ regardless of whether $H_{0}$ is true, while $\frac{SS(T)}{m-1}$ is only an unbiased estimator of $\sigma^{2}$ if $H_{0}$ is true. Otherwise $E[\frac{SS(T)}{m-1}] > \sigma^{2}$. 
+
+{\bf Test statistic and critical region.} The test statistic, and it's distribution under $H_{0}$, are \vspace{-5pt}
+\[
+F = \frac{SS(T)/(m-1)}{SS(E)/(n-m)} \sim F(m-1,n-m). \vspace{-5pt}
+\]
+We reject $H_{0}$ if $F$ is too large. The critical region has the form $F \geq F_{\alpha}(m-1,n-m)$. 
+
+{\bf ANOVA table.}
+
+{\small
+\begin{tabular}{l | c c c c}
+Source & SS & d.o.f. & Mean Sq. & F \\
+\hline
+Treatment & $SS(T)$ & $m-1$ & $\frac{SS(T)}{m-1}$ & $\frac{MS(T)}{MS(E)}$ \\
+Error & $SS(E)$ & $n-m$ & $\frac{SS(E)}{n-m}$ \\
+Total & $SS(TO)$ & $n-1$\\  
+\hline
+\end{tabular}}
+
+The elements in the ``Mean Sq.'' column are denoted $MS(T)$ and $MS(E)$ respectively. 
+
+\subsubsection{Two factor ANOVA}
+
+In two factor ANOVA we consider cases in which two factors influence the outcome of an experiment. Our interest is in whether changing each factor affects the outcome of the experiment. First we do this assuming that the factors affect the experiment independently of each other, and then we consider the case in which the factors interact. 
+
+\emph{Choosing your approach.} Before performing two factor ANOVA you need to choose whether to assume independence between the factors or not. One way to do this is to look at a table of means for the outcome variable for all possible combinations of the factors. If the factors are independent then you want to see that effect of each factor on  the mean is similar across the categories of the other factor. You can also do this analysis in a graph. 
+
+{\bf Independent factors}
+
+Suppose that two factors affect the outcome of the experiment. Factor 1 has $a$ levels and factor 2 has $b$ levels. We have one observation per cell so there are $n =ab$ observations. Let $X_{ij}$ be the observation with factor 1 at level $i$ and factor 2 at level $j$. Again we assume that observations are normally distributed, independent, that the variance is constant and that the mean varies with the factors: $X_{ij} \sim N(\mu_{ij}, \sigma^{2})$. We model the means as \vspace{-5pt}
+\[
+\mu_{ij} = \mu + \alpha_{i} + \beta_{j}, \text{ where } \sum_{i=1}^{a} \alpha_{i} = 0, \; \sum_{j=1}^{b} \beta_{i} = 0. \vspace{-5pt}
+\]
+Note that R assumes that $\alpha_{1} = 0$ and $\beta_{1} = 0$ rather than assuming that $\sum_{i=1}^{a} \alpha_{i} = 0$ and $\sum_{j=1}^{b} \beta_{i} = 0$. 
+
+\emph{Hypotheses.} We test two hypotheses. The first null hypothesis is $H_{A}: \alpha_{1} = \dots = \alpha_{a} = 0$. The second is $H_{B}: \beta_{1} = \dots = \beta_{b} = 0$. Again we test against all other alternatives.  
+
+\emph{Test statistic.} Some notation:  \vspace{-5pt}
+\[
+\overline{X}_{i.} = \frac{1}{b} \sum_{j=1}^{b} X_{ij}, \; \overline{X}_{.j} = \frac{1}{a} \sum_{i=1}^{a} X_{ij}, \; \overline{X}_{..} = \frac{1}{ab} \sum_{i=1}^{a} \sum_{j=1}^{b} X_{ij}.  \vspace{-5pt}
+\]
+The decomposition of the total sum of squares is \vspace{-5pt}
+\begin{align*}
+SS(TO) = \; &\sum_{i=1}^{a} \sum_{j=1}^{b} (X_{ij} - \overline{X}_{..})^{2} \\
+= \; &b \sum_{i=1}^{a}(\overline{X}_{i.} - \overline{X}_{..})^{2} + a \sum_{j=1}^{b}(\overline{X}_{.j} - \overline{X}_{..})^{2}\\
+&+ \sum_{i=1}^{a} \sum_{j=1}^{b} (X_{ij} - \overline{X}_{i.} - \overline{X}_{.j} + \overline{X}_{..})^{2} \\
+= \; &SS(A) + SS(B) + SS(E).  \vspace{-5pt}
+\end{align*}
+Again, $SS(E)$ does not depend whether the null hypothesis is correct and we have $\frac{SS(A)}{\sigma^{2}} \sim \chi^{2}(a-1)$, $\frac{SS(B)}{\sigma^{2}} \sim \chi^{2}(b-1)$ and $\frac{SS(E)}{\sigma^{2}} \sim \chi^{2}((a-1)(b-1))$. These RVs are also independent. 
+
+For $H_{A}$ the test statistic and critical region for a significance level of $\alpha$ are \vspace{-5pt}
+\[
+F_{A} = \frac{SS(A)/(a-1)}{SS(E)/((a-1)(b-1))} > F_{\alpha}[a-1, (a-1)(b-1)] \vspace{-5pt}
+\]
+and for $H_{B}$ we have 
+\[
+F_{B} = \frac{SS(B)/(b-1)}{SS(E)/((a-1)(b-1))} > F_{\alpha}[b-1, (a-1)(b-1)]. \vspace{-5pt}
+\]
+
+\emph{ANOVA table.}
+
+{\small
+\begin{tabular}{l | c c c c}
+Source & SS & d.o.f. & Mean Sq. & F \\
+\hline
+Factor A & $SS(A)$ & $a-1$ & $\frac{SS(A)}{a-1}$ & $\frac{MS(A)}{MS(E)}$ \\
+Factor B & $SS(B)$ & $b-1$ & $\frac{SS(B)}{b-1}$ & $\frac{MS(B)}{MS(E)}$ \\
+Error & $SS(E)$ & $(a-1)(b-1)$ & $\frac{SS(E)}{(a-1)(b-1)}$ \\
+Total & $SS(TO)$ & $ab-1$\\  
+\hline
+\end{tabular}}
+
+The elements in the ``Mean Sq.'' column are denoted $MS(A)$, $MS(B)$ and $MS(E)$ respectively. 
+
+{\bf Factors that interact.}
+
+Suppose again that there are two factors which affect the outcome of an experiment. We now allow for an interaction effect on the outcome of the experiments. Our model of the mean is \vspace{-5pt}
+\[
+\mu_{ij} = \mu + \alpha_{i} + \beta_{j} + \gamma_{ij} \vspace{-5pt}
+\]
+and we make two additional assumptions to those made in case of independent factors: \vspace{-5pt}
+\[
+\sum_{i=1}^{a} \gamma_{ij} = 0, \; \sum_{j=1}^{b} \gamma_{ij} = 0. \vspace{-5pt}
+\]
+In order to make inferences about the interactions we need more than one observation per cell. Let $X_{ijk}$ be the $k^{\text{th}}$ observation in cell $(i,j)$ and let each cell have $c$ observations.
+
+Our notation for means is now: \vspace{-5pt}
+\begin{align*}
+\overline{X}_{ij.} = \frac{1}{c} \sum_{k=1}^{c} X_{ijk}&, \; \; \overline{X}_{i..} = \frac{1}{bc} \sum_{j=1}^{b} \sum_{k=1}^{c} X_{ijk}, \\
+\overline{X}_{.j.} = \frac{1}{ac} \sum_{i=1}^{a} \sum_{k=1}^{c} X_{ijk}&, \;\; \overline{X}_{...} = \frac{1}{abc} \sum_{i=1}^{a} \sum_{j=1}^{b} \sum_{k=1}^{c} X_{ijk}, \vspace{-5pt}
+\end{align*}   
+and the the decomposition of the total sum of squares is \vspace{-5pt}
+\begin{align*}
+SS(TO) = \; &bc \sum_{i=1}^{a}(\overline{X}_{i..} - \overline{X}_{...})^{2} + ac \sum_{j=1}^{b}(\overline{X}_{.j.} - \overline{X}_{...})^{2}\\
+&+ c \sum_{i=1}^{a} \sum_{j=1}^{b} (\overline{X}_{ij.} - \overline{X}_{i.} - \overline{X}_{i..} - \overline{X}_{.j.} + \overline{X}_{...})^{2} \\
+&+ \sum_{i=1}^{a} \sum_{j=1}^{b} \sum_{k=1}^{c} (X_{ijk} - \overline{X}_{ij.})^{2} \\
+= \; &SS(A) + SS(B) + SS(AB) + SS(E).  \vspace{-5pt}
+\end{align*}
+
+\emph{Hypotheses, test statistics and critical regions.}
+
+For $H_{AB} : \gamma_{ij} = 0 \;\; \forall \;\; i = 1, \dots a, \; j = 1, \dots, b$, the test statistic and critical region for significance level $\alpha$ is \vspace{-5pt}
+\[
+F = \frac{SS(AB)/((a-1)(b-1))}{SS(E)/(ab(c-1))} > F_{\alpha}[(a-1)(b-1), ab(c-1)]. \vspace{-5pt}
+\]
+
+For $H_{A} : \alpha_{i} = 0 \;\; \forall \;\; i = 1, \dots a$, we have \vspace{-5pt}
+\[
+F = \frac{SS(A)/(a-1)}{SS(E)/(ab(c-1))} > F_{\alpha}[(a-1), ab(c-1)]. \vspace{-5pt}
+\]
+
+For $H_{B} : \beta_{j} = 0 \;\; \forall \;\; j = 1, \dots b$, we have \vspace{-5pt}
+\[
+F = \frac{SS(B)/(b-1)}{SS(E)/(ab(c-1))} > F_{\alpha}[(b-1), ab(c-1)]. \vspace{-5pt}
+\]
+
+\emph{ANOVA table.}
+
+{\small
+\begin{tabular}{l | c c c c}
+Source & SS & d.o.f. & Mean Sq. & F \\
+\hline
+Factor A & $SS(A)$ & $a-1$ & $\frac{SS(A)}{a-1}$ & $\frac{MS(A)}{MS(E)}$ \\
+Factor B & $SS(B)$ & $b-1$ & $\frac{SS(B)}{b-1}$ & $\frac{MS(B)}{MS(E)}$ \\
+Factor AB & $SS(AB)$ &$(a-1)(b-1)$ &$\frac{SS(AB)}{(a-1)(b-1)}$ &$\frac{MS(AB)}{MS(E)}$ \\
+Error & $SS(E)$ & $ab(c-1)$ & $\frac{SS(E)}{ab(c-1)}$ \\
+Total & $SS(TO)$ & $abc-1$\\  
+\hline
+\end{tabular}}
+
+The elements in the ``Mean Sq.'' column are denoted $MS(A)$, $MS(B)$, $MS(AB)$ and $MS(E)$ respectively. 
+
+\subsection{Likelihood ratio test} \label{LR test}
+
+All of the null hypotheses that we have considered so far have been simple hypotheses. The likelihood ratio test allows us to perform tests when both the null and alternative hypotheses are composite. 
+
+{\bf Hypotheses.} Assume that we know the functional form of the p.d.f. of the random variable that we're interest in but that it has an unknown parameter $\theta$. Let $\Omega$ denote the total parameter space (the set of all possible values that $\theta$ can take). The form of our hypothesis test is \vspace{-5pt}
+\[
+H_{0} : \theta \in \omega, \;\; H_{1} : \theta \in \omega^{c} \vspace{-5pt}
+\]
+where $\omega \subset \Omega$ and $\omega^{c}$ is the complement of $\omega$ with respect to $\Omega$. 
+
+Note that $\theta$ can be a vector so that our hypothesis relates to more than one parameter. 
+
+{\bf Test statistic.} Our test statistic is the \emph{likelihood ratio} \vspace{-5pt}
+\[
+\lambda = \frac{L(\widehat{\omega})}{L(\widehat{\Omega})} \vspace{-5pt}
+\]
+where $L(\widehat{\omega})$ is the maximum of the likelihood when $H_{0}$ is true and $L(\widehat{\Omega})$ is the maximum over all of $\Omega$. The challenge with this test is to find a function that's related to $\lambda$ which we know the distribution of. 
+
+{\bf Critical region.} Note that $0 \leq \lambda \leq 1$, $\lambda$ is close to zero when the data do not support $H_{0}$ and $\lambda$ is near one when the data do support $H_{0}$. Thus the critical region has the form $\lambda \leq k$ with $k \in (0,1)$ chosen to achieve the appropriate significance level.  
+
+There are two examples in the lecture slides on likelihood ratio problems. 
+
+\section{Regression}
+
+We consider the simple linear regression model \vspace{-6pt}
+\begin{equation}
+Y_{i} = \alpha_{1} + \beta x_{i} + \epsilon_{i} \label{lm1}
+\vspace{-6pt}
+\end{equation}
+when $\epsilon_{i} \sim N(0, \sigma^{2})$ so that $E[Y_{i} \vert x_{i}] = \alpha_{1} + \beta x_{i}$. We let $\alpha_{1} = \alpha - \beta\overline{x}$ in order to make calculations easier. The model then is
+\begin{equation}  
+Y_{i} = \alpha + \beta (x_{i} - \overline{x}) + \epsilon_{i} \label{lm2}
+\end{equation}
+and $Y_{i} \sim N( \alpha + \beta (x_{i} - \overline{x}), \sigma^{2})$. 
+
+\subsection{Maximum likelihood estimation}
+
+If our observations $Y_{1}, \dots, Y_{n}$ are independent then the log likelihood function is \vspace{-6pt}
+\[
+L(\alpha, \beta, \sigma^{2}) = - \frac{n}{2} \ln (2\pi\sigma^{2}) - \frac{\sum_{i=1}^{n} [y_{i} - \alpha - \beta(x_{i} - \overline{x})]^{2}}{2\sigma^{2}}. \vspace{-6pt} 
+\]
+To find estimates of $\alpha$ and $\beta$ we need to find their values which \emph{minimise} \vspace{-6pt}
+\[
+H(\alpha, \beta) = \sum_{i=1}^{n} [y_{i} - \alpha - \beta(x_{i} - \overline{x})]^{2}. \vspace{-6pt}
+\]
+Taking the two FOCs and solving simultaneously gives 
+\begin{equation}
+\widehat{\alpha} = \overline{Y}, \quad \widehat{\beta} = \frac{\sum_{i=1}^{n} Y_{i}(x_{i} - \overline{x})}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}}. \label{lm estimates}
+\end{equation}
+To find $\widehat{\sigma}^{2}$ solve $\frac{\partial \ln L}{\partial \sigma^{2}} = 0$. This yields \vspace{-6pt}
+\[
+\widehat{\sigma}^{2} = \frac{1}{n} \sum_{i=1}^{n} [y_{i} - \widehat{\alpha} - \widehat{\beta}(x_{i} - \overline{x})]^{2} = \frac{1}{n} \sum_{i=1}^{n} \widehat{\epsilon_{i}}^{2}. \vspace{-6pt}
+\]
+
+\subsection{Confidence intervals for parameter estimates}
+
+$\boldsymbol{\widehat{\alpha}}$. $Y_{1}, \dots, Y_{n}$ are independent and normally dist. RVs. $\widehat{\alpha}$ is a linear combination of these and so also has a normal distribution with parameters \vspace{-6pt}
+\begin{align*} 
+\mu_{\widehat{\alpha}} &= E(\widehat{\alpha}) = \frac{1}{n} \sum_{i=1}^{n} E(Y_{i}) = \alpha, \\
+\sigma_{\widehat{\alpha}}^{2} &= \left( \frac{1}{n} \right)^{2} \sum_{i=1}^{n} V(Y_{i}) = \frac{\sigma^{2}}{n}, \\
+\Rightarrow \quad \widehat{\alpha} &\sim N\Big( \alpha, \frac{\sigma^{2}}{n} \Big). \vspace{-6pt}
+\end{align*}
+
+$\boldsymbol{\widehat{\beta}}$. $\widehat{\alpha}$ is also a linear combination of $Y_{1}, \dots, Y_{n}$ and so has a normal distribution. The parameters of the distribution are: \vspace{-6pt}
+\begin{align*}
+\mu_{\widehat{\beta}} &= E(\widehat{\beta}) = \frac{\sum_{i=1}^{n} E[Y_{i}](x_{i} - \overline{x})}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} = \beta, \\
+\sigma_{\widehat{\beta}}^{2} &= \sum_{i=1}^{n} \left[ \frac{x_{i} - \overline{x}}{\sum_{j=1}^{n} (x_{j} - \overline{x})^{2}} \right]^{2} Var(Y_{i}) = \frac{\sigma^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}}, \\
+\Rightarrow \quad \widehat{\beta} &\sim N\Big( \beta, \frac{\sigma^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} \Big). \vspace{-6pt}
+\end{align*}
+
+A problem with these results is that the distribution depends on $\sigma^{2}$ which may be unknown. To construct a pivot we use the fact (which we didn't prove) that \vspace{-6pt}
+\begin{equation}
+\frac{\sum_{i=1}^{n} [Y_{i} - \widehat{\alpha} - \widehat{\beta}(x_{i} - \overline{x})]^{2}}{\sigma^{2}} = \frac{n\widehat{\sigma}^{2}}{\sigma^{2}} \sim \chi_{n-2}^{2}. \label{vardist}
+\vspace{-6pt}
+\end{equation}
+The pivots are: \vspace{-6pt}
+\begin{align}
+T_{1} &= \frac{\sqrt{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}}\left( \frac{\widehat{\beta} - \beta}{\sigma} \right)}{\sqrt{\frac{n\widehat{\sigma}^{2}}{\sigma^{2}(n-2)}}} = \frac{\widehat{\beta} - \beta}{\sqrt{ \frac{n\widehat{\sigma}^{2}}{(n-2)\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} }}, \label{dist alpha} \\
+T_{2} &= \frac{ \frac{\sqrt{n}(\widehat{\alpha} - \alpha)}{\sigma} }{\sqrt{\frac{n\widehat{\sigma}^{2}}{\sigma^{2}(n-2)}}} = \frac{\widehat{\alpha} - \alpha}{\sqrt{ \frac{\widehat{\sigma}^{2}}{(n-2)} }}. \label{dist beta} \vspace{-6pt}
+\end{align}
+These both have $t$-distributions with $n-2$ degrees of freedom. 
+
+{\bf Notes on statistical packages.}
+\begin{itemize}
+\item Statistical packages typically don't construct the pivot. Instead they just use the parameters of the distributions of $\widehat{\alpha}$ and $\widehat{\beta}$, and estimate $\sigma^{2}$ with $\frac{1}{n-2} \sum_{i=1}^{n} [Y_{i} - \widehat{\alpha} - \widehat{\beta}(x_{i} - \overline{x})]^{2}$. 
+\item They also use equation \eqref{lm1} for the regression rather than equation \eqref{lm2} so the intercept is slightly different. 
+\end{itemize}
+
+\subsection{Prediction intervals}
+
+\subsubsection{Confidence interval for $\widehat{Y}$} \label{CIYhat}
+
+For a given value of $x$ we can get a point estimate of Y using the estimated model: $\widehat{Y} = \widehat{\alpha} + \widehat{\beta}(x - \overline{x})$. To get a C.I for $\widehat{Y}$ we need the variance of this point estimate and we need to construct a pivot. Using the fact that $\widehat{\alpha}$ and $\widehat{\beta}$ are independent (not proved), \vspace{-6pt}
+\[
+V(\widehat{Y}) = V[\widehat{\alpha} + \widehat{\beta}(x - \overline{x})] = \sigma^{2}\left[ \frac{1}{n} + \frac{(x - \overline{x})^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} \right].
+\vspace{-6pt} \]
+Using result \eqref{vardist}, we get the following $t$-statistic: \vspace{-6pt}
+\begin{align*}
+T &= \frac{[\widehat{\alpha} + \widehat{\beta}(x - \overline{x})] - [\alpha + \beta(x - \overline{x})]}{ \sigma \sqrt{ \frac{1}{n} + \frac{(x - \overline{x})^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} } \sqrt{\frac{n\widehat{\sigma}^{2}}{\sigma^{2}(n-2)}} } \\
+&= \frac{[\widehat{\alpha} + \widehat{\beta}(x - \overline{x})] - [\alpha + \beta(x - \overline{x})]}{ \sqrt{\frac{\widehat{\sigma}^{2}}{n-2}} \sqrt{ 1 + \frac{n(x - \overline{x})^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} }  } \sim t_{n-2}. \vspace{-6pt}
+\end{align*}
+With this statistic we use the usual method for constructing a C.I. Note that as $x$ gets further from $\overline{x}$ the width of the C.I. increases. 
+
+\subsubsection{Prediction interval for $Y$}
+
+The C.I. constructed in section \ref{CIYhat} does not take account of the variability of the error of $\widehat{Y}$. We now account for this and get our prediction interval (P.I.). Let \vspace{-6pt}
+\[
+W = Y - \widehat{\alpha} - \widehat{\beta}(x - \overline{x}).
+\vspace{-6pt} \]
+Then $E(W) = 0$ and, since $Y$, $\widehat{\alpha}$ and $\widehat{\beta}$ are mutually independent, \vspace{-6pt}
+\[
+V(W) = \sigma^{2} \left( 1 + \frac{1}{n} + \frac{(x - \overline{x})^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} \right).
+\vspace{-6pt} \]
+We can construct a $t$-statistic in the same way as in section \ref{CIYhat} to get a $100(1-\alpha)\%$ P.I. \vspace{-6pt}
+\[
+\widehat{\alpha} + \widehat{\beta}(x - \overline{x}) \pm d t_{\alpha/2}(n-2) 
+\vspace{-6pt}\]
+where \vspace{-6pt}
+\[
+ d = \sqrt{\frac{n\widehat{\sigma}^{2}}{n-2}} \sqrt{ 1 + \frac{1}{n} + \frac{(x - \overline{x})^{2}}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} }. 
+\vspace{-6pt}\]
+
+\subsection{Hypothesis testing in regression}
+
+To conduct hypothesis tests for $\alpha$ and $\beta$ we use equations \eqref{dist alpha} and \eqref{dist beta}. If conducting a hypothesis test for $\alpha$ in R you must keep in mind that in R the linear model is specified as per equation \eqref{lm1}.
+
+\subsection{Linear models and correlation}
+
+See section \ref{correlation} on the relevance of correlation to linear models when $X$ and $Y$ have a bivariate normal distribution. 
+
+\section{Correlation} \label{correlation}
+
+In this section we look at the correlation between observations from the bivariate normal distribution. 
+
+Let $(X_{1},Y_{1}), \dots, (X_{n},Y_{n})$ be a random sample from a bivariate normal distribution. The {\bf covariance} is \vspace{-5pt}
+\[
+Cov(X,Y) = E[(X - \mu_{X})(Y - \mu_{Y})] = \rho \sigma_{X} \sigma_{Y} \vspace{-5pt}
+\] 
+where $\rho = \frac{Cov(X,Y)}{\sigma_{X}\sigma_{Y}}$ is the {\bf correlation coefficient}. If $\rho = 0$, $X$ and $Y$ are uncorrelated and, if they have a bivariate normal distribution, then they are independent. 
+
+\subsection{Bivariate normal distributions and linear models} \label{linear models and corr}
+
+If $X$ and $Y$ have a bivariate normal distribution,
+\begin{itemize}
+\item $Y \vert X$ has a normal distribution for each $x \in X$,
+\item $E(Y \vert x)$ is a linear function of $x$,
+\item $Var(Y \vert x)$ is constant and doesn't depend on $x$. 
+\end{itemize}
+Furthermore, \vspace{-5pt}
+\[
+E(Y \vert x) = \mu_{Y} + \rho \frac{\sigma_{Y}}{\sigma_{X}}(x - \mu_{x}) \vspace{-5pt}
+\]
+so in the regression model $\beta = \rho \frac{\sigma_{Y}}{\sigma_{X}}$, so $\beta = 0$ iff $\rho = 0$. 
+
+\subsection{Estimating $\rho$.} \label{estimating rho}
+
+The sample estimate of $\rho$ is \vspace{-5pt}
+\[
+R = \frac{\frac{1}{n-1} \sum_{i=1}^{n} (X_{i} - \overline{X})(Y_{i} - \overline{Y})}{S_{X}S_{Y}} = \frac{S_{XY}}{S_{X}S_{Y}}. \vspace{-5pt}
+\]
+In the case of a linear model for $Y$ and $X$ where $(Y,X)$ which has a bivariate normal distribution, the MLE of the slope parameter exactly matches up with this definition of $R$ so that 
+\[
+\widehat{\beta} = R \frac{S_{X}}{S_{Y}} = \frac{S_{XY}}{S_{X}^{2}}. \vspace{-5pt}
+\]
+
+\subsection{Hypothesis testing for $\rho$.}
+
+\emph{Hypothesis:} $H_{0} : \rho = 0$, $H_{1} : \rho \neq 0$. 
+
+To test this hypothesis we start by estimating the slope parameter for a linear model of $Y$ dependent on $X$. Given observations $X_{1} = x_{1}, \dots, X_{n} = x_{n}$ this estimate (from equation \eqref{lm estimates}) is \vspace{-5pt}
+\begin{align*} 
+\widehat{\beta} &= \frac{\sum_{i=1}^{n} Y_{i}(x_{i} - \overline{x})}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} = \frac{\sum_{i=1}^{n} (x_{i} - \overline{x})(Y_{i} - \overline{Y})}{\sum_{i=1}^{n} (x_{i} - \overline{x})^{2}} \\
+&\sim N\left( 0, \frac{\sigma_{Y}^{2}}{(n-1)s_{x}^{2}}\right). \vspace{-5pt}
+\end{align*} 
+From equation \eqref{vardist} we also have \vspace{-5pt}
+\begin{align*}
+\frac{\sum_{i=1}^{n} [Y_{i} - \overline{Y} - \widehat{\beta}(x_{i} - \overline{x})]^{2}}{\sigma^{2}} &=  \frac{(n-1) S_{Y}^{2} (1 - R^{2})}{\sigma_{Y}^{2}} \\
+&\sim \chi^{2}(n-2). \vspace{-5pt}
+\end{align*}
+Using these results and $\widehat{\beta} = R \frac{S_{X}}{S_{Y}}$ we get a $t$-statistic which we can use to test the hypothesis: \vspace{-5pt}
+\[
+T = \frac{R\sqrt{n-2}}{\sqrt{1 - R^{2}}} \sim t(n-2). \vspace{-5pt}
+\]
+This distribution is conditional on $X_{1}, \dots, X_{n}$, but since the statistic does not depend on $x_{1}, \dots, x_{n}$ it is also the unconditional distribution. 
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

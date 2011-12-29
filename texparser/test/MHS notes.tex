@@ -1,0 +1,1250 @@
+\documentclass[two column]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath, amsthm}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\addtolength{\textwidth}{+4cm} 
+\setlength{\marginparwidth}{0pt}
+\addtolength{\hoffset}{-2cm }
+\addtolength{\voffset}{-2cm }
+\addtolength{\textheight}{+5cm}
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}{Definition}[subsection]
+
+\title{Metric and Hilbert Spaces: Notes}
+\author{Nic Kozeniauskas}
+\date{November 6, 2010}                                           % Activate to display a given date or no date
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{General maths knowledge and skills}
+
+\subsection{Basic results and defintions}
+
+\begin{itemize}
+\item Any interval on the real number line contains a rational number. 
+\item {\bf Sequence limit.} A sequence $\{ x_{n} \}$ converges to a point $x$ if for any $\epsilon > 0$ $\exists$ $N$ such that $\lvert x_{n} - x \rvert < \epsilon \;\; \forall \;\; n \geq N$.
+\item The limit of a sequence is unique. 
+\item {\bf Linear map.} Let $V$ and $W$ be vector spaces over the same field $K$. Then $f:V \rightarrow W$ is a \emph{linear map} if for an two vectors $x,y \in V$ and and scalar $k \in K$, the following two conditions are satisfied:
+\begin{enumerate}
+\item $f(x + y) = f(x) + f(y)$,
+\item $f(kx) = kf(x)$. 
+\end{enumerate}
+\end{itemize}
+
+\subsection{Elementary theorems}
+
+\begin{itemize}
+\item {\bf Monotonic sequence theorem.} Every bounded monotonic sequence converges. 
+\item {\bf Mean value theorem.} If $f(x)$ is a continuous function on $[a,b]$ and differentiable on $(a,b)$ then $\exists$ $c \in (a,b)$ such that 
+\[f'(c) = \frac{f(b)-f(a)}{b-a}.
+\vspace{-6pt}\]
+\end{itemize}
+
+\subsection{Methods of proof}
+
+\begin{itemize}
+\item To prove two sets $A$ and $B$ are equal you can show that $A \subseteq B$ and $B \subseteq A$ or that $x \in A \Leftrightarrow x \in B$. 
+\item To prove that $A \Rightarrow B$ you can show that $(\text{not } B) \Rightarrow (\text{not } A)$.
+\end{itemize}
+
+\subsection{Spaces} \label{spaces}
+
+\begin{itemize}
+\item $l^{p}$ is the vector space of sequences $\{a_{n}\} \in \mathbb{R}^{n} \text{ or } \mathbb{C}^{n}$  with the property that $\sum_{n} \vert a_{n} \vert^{p} < \infty$. 
+\item For $p \geq 1$ the $L^{p}(\mathbb{R}^{k})$ space is the completion of the set of all continuous functions on $\mathbb{R}^{k}$. You can also define $L^{p}$ on a subset of $\mathbb{R}^{k}$. The set of all continuous functions on $\mathbb{R}^{k}$ is not complete because there are sequences of continuous functions which have a limit that is a discontinuous function. 
+\item $C(X,F)$ is the space of continuous functions where the field, $F$, is either $\mathbb{R}$ or $\mathbb{C}$.
+\item $C_{b}(X,F)$ is the same as $C(X,F)$ except the functions must be bounded. 
+\end{itemize}
+
+\subsection{Complex numbers}
+
+\begin{itemize}
+\item {\bf Complex conjugate.} If $x = a + bi$ then the complex conjugate $\overline{x} = a - bi$. Some properties of the complex conjugate: if $z_{1}, z_{2} \in \mathbb{C}$ then $\overline{z_{1}z_{2}} = \overline{z}_{1} \overline{z}_{2}$ and $\overline{(z_{1}/z_{2})} = \overline{z}_{1} / \overline{z}_{2}$. 
+\end{itemize}
+
+\subsection{Matrices} \label{matrices}
+
+\begin{itemize}
+\item A {\bf Hermetian matrix} is matrix which equals it complex conjugate transpose. If $A$ is a complex matrix then $A$ is Hermitian if $A = \overline{A}^{T}$.  The \emph{eigenvalues} of a Hermitian matrix are real. 
+\item The real analogue of a Hermitian matrix is a {\bf symmetric matrix}. If $A$ is a real matrix, then $A$ is symmetric if $A^{T} = A$.
+\end{itemize}
+
+\part{Metric Spaces}
+
+\section{Metric Spaces}
+
+\begin{definition}
+Consider a non-empty set $X$ together with a mapping $d: X \times X \rightarrow \mathbb{R}$ satisfying:
+\begin{enumerate}
+\item $d(x, y) = d(y,x)$
+\item $d(x,y) \geq 0$ and $d(x,y)=0$ iff $x=y$
+\item Given $x,y,z \in X$, $d(x,z) \leq d(x,y) + d(y,z)$.
+\end{enumerate}
+We call (X,d) a {\bf metric space}.
+\end{definition}
+
+Given a metric space you can construct new metric spaces. For example:
+\begin{itemize}
+\item If $(X,d)$ is a metric space, $Y \subset X$ with $Y \neq \emptyset$ and we set $d_{Y}(x,y) = d(x,y)$, then $(Y, d_{Y})$ is a metric space which we call a {\bf subspace} of $(X, d)$. 
+\item If $(X_{1}, d_{1}), \dots, (X_{k}, d_{k})$ are metric spaces, $x = (x_{1}, \dots, x_{k})$ and $y = (y_{1}, \dots, y_{k})$ then the set $X_{1} \times \dots \times X_{k}$ together with the function $d(x,y) = \sum_{i=1}^{k} d_{i}(x_{i}, y_{i})$ is a metric space.
+\end{itemize}
+
+A useful result for proofs of the triangle inequality is:
+\begin{itemize}
+\item For $f(t) = t^{\alpha}$ with $\alpha \in (0,1]$, $f(a+b) \leq f(a) + f(b)$ for $a,b \in [0, \infty)$.
+\end{itemize}
+
+\subsection{Norms} \label{norms}
+
+\begin{definition}  \label{norms}
+A {\bf norm} is a function $\lVert \cdot \rVert : X \rightarrow \mathbb{R}$ with the following properties
+\begin{enumerate}
+\item $\lVert x \rVert \geq 0$, $\lVert x \rVert = 0$ iff $x=0$
+\item $\lVert \lambda x \rVert = \lvert \lambda \rvert \cdot \lVert x \rVert$ $\forall$ $x \in X, : \lambda \in \mathbb{R}$ (or $\mathbb{C}$) 
+\item $\lVert x + y \rVert \leq \lVert x \rVert + \lVert y \rVert$ $\forall$ $x,y \in X$.
+\end{enumerate}
+The pair $(X, \lVert \cdot \rVert)$ is called a {\bf normed vector space}. 
+\end{definition}
+
+Some examples:
+\begin{itemize}
+\item If $\left(V, <,> \right)$ is an inner product space then $\lVert v \rVert = \sqrt{< v,v>}$ is a norm.
+\item In $\mathbb{R}^{n}$ the standard Euclidean norm is $\lVert (x_{1}, \dots, x_{n}) \rVert = \sqrt{x_{1}^{2} + \dots + x_{n}^{2}}$. You prove the triangle inequality for this using the \emph{Cauchy-Schwarz Inequality}.
+\item If $x = (x_{1}, \dots, x_{n}) \in \mathbb{R}^{n}$ then for $1 \leq p < \infty$ \vspace{-5pt}
+\[ \lVert x \rVert_{p} = \left[ \sum_{i=1}^{n} \lvert x_{i} \rvert^{p} \right]^{1/p} \vspace{-5pt} \]
+is a norm. We denote the metric space $(\mathbb{R}^{n}, \lVert x \rVert_{p})$ by $l_{n}^{p}$. 
+\item For $1 < p < \infty$ the $l^{p}$ space consists of vectors $x = (x_{1}, x_{2}, \dots )$ in $\mathbb{R}^{n}$ (or $\mathbb{C}^{n}$) for which the series $\sum_{i=1}^{\infty} \vert x_{i} \vert$ converges. The norm is \vspace{-10pt}
+\[
+\Vert x \rVert_{p} = \left[ \sum_{i=1}^{n} \lvert x_{i} \rvert^{p} \right]^{1/p} \vspace{-5pt}
+\]
+For $p = \infty$ the norm is $\Vert x \rVert_{\infty} = \sup_{i \in \mathbb{N}} \vert x_{i} \vert$. 
+\item For $L^{p}(S)$, where $S$ is a subset of $\mathbb{R}^{k}$, the norm is \vspace{-5pt}
+\[
+\Vert f \Vert_{p} = \left( \int_{S} \vert f(x) \vert^{p} \; dx\right)^{\frac{1}{p}} \vspace{-5pt}
+\].
+\item For the space of continuous complex functions on a closed interval $[a,b]$, the supremum norm is $\Vert f \Vert = \sup_{x} \{ \vert f(x) \vert : x \in [a,b] \}$. \\
+\end{itemize}
+
+\begin{lemma} \label{C-S inequality}
+{\bf Cauchy-Schwarz Inequality.} For $a_{i}, b_{i} \in \mathbb{R}$, 
+\[ \lvert \sum_{i=1}^{n} x_{i} y_{i} \rvert \leq \sqrt{\sum_{i=1}^{n} x_{i}^{2}} \sqrt{\sum_{i=1}^{n} y_{i}^{2}}. \]
+\end{lemma}
+
+\begin{corollary}
+It follows from the Cauchy-Schwarz inequality that $\lVert x + y \rVert \leq \lVert x \rVert + \lVert y \rVert$ for all $x,y \in \mathbb{R}^{n}$.\\ 
+\end{corollary}
+
+\begin{lemma}
+{\bf H\"older inequality.} If $x, y \in \mathbb{R}^{n}$, $1 < p < \infty$, $1 < q < \infty$, $\frac{1}{p} + \frac{1}{q} = 1$, then \vspace{-10pt}
+\[
+\left\vert \sum_{i=1}^{n} x_{i} y_{i} \right\vert \leq \left[ \sum_{i=1}^{n} \vert x_{i} \vert^{p} \right]^{\frac{1}{p}} \cdot \left[ \sum_{i=1}^{n} \vert y_{i} \vert^{q} \right]^{\frac{1}{q}} \vspace{5pt}
+\]
+\end{lemma}
+
+\begin{corollary}
+{\bf Minkowski inequality.} If If $x, y \in \mathbb{R}^{n}$, $1 \leq p < \infty$, then \vspace{-10pt}
+\[
+\left[ \sum_{i=1}^{n} \vert x_{i} + y_{i} \vert^{p} \right]^{\frac{1}{p}} \leq \left[ \sum_{i=1}^{n} \vert x_{i} \vert^{p} \right]^{\frac{1}{p}} + \left[ \sum_{i=1}^{n} \vert y_{i} \vert^{p} \right]^{\frac{1}{p}} \vspace{5pt}
+\]
+\end{corollary}
+
+\begin{proposition} \label{norm to metric}
+If $(X, \lVert \cdot \rVert)$ is a normed vector space then $d(x,y) = \lVert x - y \rVert$ is a metric on $X$.
+\end{proposition}
+
+\subsection{Balls and Diameter} \label{bounded}
+
+\begin{itemize}
+\item An {\bf open ball} is a set of points 
+\[ B(x,r) = \lbrace y: d(x,y)<r \rbrace \]
+where $x$ is the centre and $r$ is the radius. It it also sometimes denoted by $B_{x}(r)$ or $B_{r}(x)$. 
+\item A {\bf closed ball} is 
+\[ \overline{B}(x,r) = \lbrace z: d(x,z) \leq r \rbrace. \]
+\item The {\bf diameter} of a subset $A \subset X$ is 
+\[ diam(A) = \sup \lbrace d(x,y): x,y \in A \rbrace. \]
+If $A$ is not closed then $diam(A)$ may not be the distance between two points in $A$. $A$ is {\bf bounded} if its diameter is finite.  
+\item If $A \subset X$ and $B \subset X$ then the {\bf distance} between these subsets is
+\[ d(A,B) = \inf \lbrace d(a,b): a \in A, b \in B \rbrace. \]
+Note that if two open balls ``touch'' then the distance between these sets is $0$ but they don't meet.
+\end{itemize}
+
+\subsection{Converg. of Sequences}
+
+\begin{definition}
+A sequence of points $\lbrace x_{1}, x_{2}, \dots \rbrace$ in a metric space converges to $x$ if for every $\epsilon >0$ $\exists$ a positive integer $k$ such that $d(x_{n}, x) < \epsilon \; \forall \; n \geq k$.  In other words $\lim_{n \rightarrow \infty} d(x_{n}, x) = 0$.\\ 
+\end{definition}
+
+\begin{proposition}
+If a sequence converges then it has a unique limit.\\
+\end{proposition}
+
+\begin{proposition}
+If $X = \prod_{i=1}^{n} X_{i}$ is the product of metric spaces $(X_{i},d)$, $1 \leq i \leq n$, and $x_{m} = (x_{1}^{m}, \dots , x_{n}^{m}) \in X$, then $x^{m} \rightarrow x = (x_{1}, \dots , x_{n}) \in X$ iff $x_{i}^{m} \rightarrow x_{i} \in X_{i}$ for $i = 1, \dots, n$. \\
+\end{proposition}
+
+\begin{definition}
+{\bf Equivalent metrics.} The metrics $d$ and $d'$ in $X$ are equivalent if
+\[ d(x_{n}, x) \rightarrow 0 \Leftrightarrow d'(x_{n}, x) \rightarrow 0. \]
+\end{definition}
+
+\begin{theorem}
+Two metrics $d, d' \in X$ are equivalent if there are constants $k, k' > 0$ such that
+\[ d(x,y) \leq kd'(x,y) \leq k'd(x,y) \; \forall \; x,y \in X. \] 
+\end{theorem}
+\begin{itemize}
+\item Note that this is a sufficient condition for metrics to be equivalent, but not a necessary condition. 
+\end{itemize}
+
+{\bf Remark.} Another way to prove equivalence is to use the fact that if $f:X \rightarrow Y$ is continuous then if $x_{n}\rightarrow x$, $f(x_{n}) \rightarrow f(x)$. For example take the metrics $d(x,y) = \vert x - y \vert$ and $d'(x,y) = \vert \frac{1}{x} - \frac{1}{y} \vert$ on $(0,1]$. We can define a continuous function $f : (0,1] \rightarrow [1, \infty), f(x) = \frac{1}{x}$, where the metrics on both $(0,1]$ and $[1, \infty)$ is the standard metric in $\mathbb{R}$. Therefore if $x_{n}\rightarrow x$, $\frac{1}{x_{n}} \rightarrow \frac{1}{x}$. Thus proves equivalence of the metrics. 
+
+\subsection{Open and Closed Sets}
+
+\begin{definition}
+Let $A \subset X$. $A$ is an {\bf open set} if   $\forall$ $x \in A$ $\exists$ $r>0$ such that $B(x,r) \subset A$. \\
+\end{definition}
+
+\begin{proposition}
+Let $X$ be a metric space. Then 
+\begin{itemize}
+\item Any open ball is open.
+\item $\emptyset$ is open.
+\item $X$ is open. 
+\item $\bigcap_{i=1}^{n} U_{i}$ is open for any collection of open subsets of X, $U_{1}, \dots , U_{n}$.
+\item The union of any collection of open sets (finite or infinite) is open.\\
+\end{itemize}
+\end{proposition}
+
+\begin{definition}
+A point $x \in X$ is called an {\bf adherent point} of a subset A if for every $\epsilon > 0$ $\exists$ a point $y \in A$ such that $y \in B(x, \epsilon)$. The {\bf closure} of $A$, $\overline{A}$, is the set consisting of all the adherent point of $A$. If $A = \overline{A}$, then $A$ is {\bf closed}. \\
+\end{definition}
+
+\begin{proposition}
+A point $x$ is an adherent point of $A$ iff $\exists$ a sequence of points $x_{n} \in A$ converging to $x$. \\
+\end{proposition}
+
+\begin{proposition}
+A subset $A$ of $X$ is open iff its complement $A^{c}$ is closed in X. 
+\end{proposition}
+\begin{itemize}
+\item A useful fact for this proof is that any point $x \in A$ is either an interior point of $A$, or an adherent point of $A^{c}$. 
+\end{itemize}
+
+\subsubsection{Interior and closure of a set}
+
+\begin{definition}
+Let $A \subset X$. A point $x \in A$ is called an {\bf interior point} of $A$ if $B(x,r) \subset A$ for some $r > 0$. The collection of all interior points of a set $A$ is called the {\bf interior} of $A$, denoted $A^{o}$ or $intA$. \\
+\end{definition}
+
+\begin{proposition}
+For every $A \subset X$, $A^{o}$ is the unique largest open set. \\
+\end{proposition}
+
+\begin{definition}
+The {\bf closure} of a subset $A \subset X$ is the smallest closed set containing $A$, denoted $clA$ or $\overline{A}$. 
+\begin{itemize}
+\item Note that $\overline{A} = X \setminus int(X \setminus A)$.\\
+\end{itemize}
+\end{definition}
+
+\begin{theorem}
+Let $D$ be the set of adherent points of $A$. Then $\overline{A} = A \cup D$. \\
+\end{theorem}
+
+\begin{proposition}
+Let $X$ be a metric space. Then
+\begin{itemize}
+\item The union of a finite collection of closed sets $A_{1}, \dots, A_{k}$ is closed.
+\item The intersection of a arbitrary collection of closed sets (finite or infinite) is closed. \\ 
+\end{itemize}
+\end{proposition}
+
+{\bf Examples.} Closures and interiors.
+\begin{itemize}
+\item Let $A$ be the set of \emph{rational points} in the unit square, $\{ (x,y): 0 \leq x,y \leq 1, \; x,y \in \mathbb{Q} \}$. Since $x$ and $y$ can take the values $0$ and $1$ the set is closed. Note that the interior is empty. \\
+\end{itemize}
+
+\begin{theorem} Let $Y$ be a subspace of $X$. Then 
+\begin{enumerate}
+\item A set $V \subset Y$ is open iff there is an open set $U \subset X$ with $V = U \cap Y$. 
+\item A set $V \subset Y$ is closed iff there is a closed set $U \subset X$ with $V = U \cap Y$. \\
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+Let $X$ be the product of metric spaces $(X_{i}, d_{i})$, $1 \leq i \leq m$. 
+\begin{enumerate}
+\item If $A_{i}$ is open in $X_{i}$, $1 \leq i \leq m$, then the product $A = \prod_{i=1}^{n} A_{i}$ is an open subset of $X$.  
+\item If $F_{i}$ is closed in $X_{i}$, $1 \leq i \leq m$, then the product $F = \prod_{i=1}^{n} F_{i}$ is a closed in $X$.  
+\end{enumerate}
+\end{theorem}
+
+\subsubsection{Boundaries}
+
+\begin{definition}
+The {\bf boundary} of $A$ in $X$, denoted $\partial A$, is the set $\overline{A} \cap \overline{X \setminus A}$.\\
+\end{definition}
+
+\begin{lemma}
+$\overline{A} \cap \overline{X \setminus A} = \overline{A} \setminus A^{o}$ so $\partial A = \overline{A} \setminus A^{o}$. \\
+\end{lemma}
+
+\begin{definition}
+A subset $A$ of a metric space $X$ is called {\bf dense} if $X = \overline{A}$ (i.e. given $x \in X$, $x = \lim_{n \rightarrow \infty} a_{n}$, $a_{n} \in A$). \\
+\end{definition}
+
+\begin{proposition}
+If $A \subseteq B$ and $B$ is closed then $\overline{A} \subseteq B$. 
+\end{proposition}
+
+\section{Continuity}
+
+\subsection{Definitions of continuity}
+
+\begin{definition}
+{\bf Continuity.} Let $(X,d)$ and $(Y, \rho)$ be metric spaces and let $f:X\rightarrow Y$ be a function. This function is {\bf continuous at the point} $x_{0} \in X$ if: for every $\epsilon >0 \;\; \exists \;\; \delta > 0$ such that $\forall$ $x \in X$ if $d(x,x_{0}) < \delta$ then $\rho(f(x),f(x_{0})) < \epsilon$. The function $f$ is said to be {\bf continuous} if it is continuous at each point in $X$.
+\end{definition}
+
+Alternatively this definition can be phrased in terms of open balls.\\
+
+\begin{proposition}
+Let $f:X\rightarrow Y$ be a function from a metric space $X$ to a metric space $Y$ and let $x_{0} \in X$. Then $f$ is continuous at $x_{0}$ iff for every $\epsilon >0 \;\; \exists \;\; \delta > 0$ such that $f(B(x_{0},\delta)) \subset B(f(x_{0}),\epsilon)$. 
+\end{proposition}
+
+A further way to define continuity is directly in terms of limits. \\
+
+\begin{theorem}
+Let $(X,d)$ and $(Y, \rho)$ be metric spaces, $f:X\rightarrow Y$ be a function and $x_{0} \in X$. Then $f$ is continuous at $x_{0}$ iff for every sequence $\{ x_{n} \}$ such that $x_{n} \rightarrow x_{0}$, $f(x_{n}) \rightarrow f(x_{0})$. Also, $f$ is continuous iff for every convergent sequence $\{ x_{n} \}$ in $X$, \vspace{-6pt}
+\[ \lim_{n} f(x_{n}) = f(\lim_{n} x_{n}).\]
+\end{theorem}
+
+\begin{definition}
+{\bf Preimage or pullback.} Let $f: X \rightarrow Y$ be a mapping between two metric spaces. Then, if $U \subset Y$, $f^{-1}(U)$, the preimage or pullback of $U$, is defined as $f^{-1}(U) = \{ x \in X: f(x) \in U \}$.  
+\end{definition}
+
+A third way to define continuity utilises the preimage. \\
+
+\begin{theorem}
+Let $f$ be a function from a metric space $(X,d)$ to $(Y,\rho)$. Then
+\begin{enumerate}
+\item $f$ if continuous iff for every open set $U \subset Y$, $f^{-1}(U)$ is open in $X$. 
+\item $f$ if continuous iff for every closed set $F \subset Y$, $f^{-1}(F)$ is closed in $X$. \vspace{6pt}
+\end{enumerate}
+\end{theorem}
+
+{\bf Example.} Let $S^{1}$ be the unit circle in $\mathbb{R}^{2}$ of radius $1$ with centre $(0,0)$. Consider $S^{1}$ as a subspace of $\mathbb{R}^{2}$. Let $f : [0, 2\pi) \rightarrow S^{1}$ be given by $f(x) = (\cos x, \sin x)$ for $x \in [0, 2\pi )$. It is fairly easy to show that $f$ is continuous. The point of this example is that $f^{-1}: S^{1} \rightarrow [0, 2\pi)$ is not continuous. Continuity of the inverse breaks down at the point $(0,1) \in S^{1}$. The reason is that if $y_{1} \in S^{1}$ is in the fourth quadrant and is close to $(1,0)$ then $f^{-1}(y_{1}) \approx 2\pi$ while if $y_{2} \in S^{1}$ is in the first quadrant and is close to $(1,0)$ then $f^{-1}(y_{2}) \approx 0$. This makes it impossible to define $\delta$ so that, for any $\epsilon < 2\pi$, if $d(y, (1,0)) < \delta$ then $\rho(f^{-1}(y), f^{-1}((1,0))) < \epsilon$, where $d$ is the metric on $S^{1}$ and $\rho$ the metric on $[0, 2\pi)$. 
+
+\subsection{Some continuity theorems}
+
+\begin{theorem}
+Let $X$, $Y$ and $Z$ be three metric spaces. 
+\begin{enumerate}
+\item If $f:X \rightarrow Y$ and $g: Y \rightarrow Z$ are continuous, then the composition $g \circ f$ is continuous. 
+\item If $f:X \rightarrow Y$ is continuous, and $A$ is a subspace of $X$, then the restriction of $f$ to $A$, $f\vert_{A}:A\rightarrow Y$, is continuous. \\
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+Let $(X,d)$, $(Y_{1}, \rho_{1})$ and $(Y_{2}, \rho_{2})$ be metric spaces. Let $f$ be a function from $X$ to $Y_{1}$ and $g$ be a function from $X$ to $Y_{2}$. Also let $h: X \rightarrow Y_{1} \times Y_{2}$ be defined as $h(x) = (f(x),g(x))$ for $x\in X$. 
+\begin{enumerate}
+\item If $f$ and $g$ are continuous functions from $(X,d)$ to $\mathbb{R}$ then so are $f + g$, $f \cdot g$, $f-g$. Also $f/g$ is continuous provided that $g(x) \neq 0$. 
+\item $h$ is continuous at $x_{0}$ iff $f$ and $g$ are continuous at $x_{0}$. Thus $h$ is continuous iff $f$ and $g$ are continuous. 
+\item$d: X \times X \rightarrow \mathbb{R}$ is continuous. \\
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+{\bf The pasting lemma.} Let $X = A \cup B$, where $A$ and $B$ are closed subspaces of $X$. Let $F : A \rightarrow Y$ and $g : B \rightarrow Y$ be continuous. If $f(x) = g(x)$ for all $x \in A \cap B$ then the function $h : X \rightarrow Y$ defined by \vspace{-5pt}
+\[
+h(x) = \begin{cases} f(x) &\text{if } x \in A \\ g(x) &\text{if } x \in B \end{cases} \vspace{-5pt}
+\]
+is continuous. 
+\end{theorem}
+
+\subsection{Uniform continuity and uniform convergence}
+
+\begin{definition}
+A mapping $f$ from a metric space $(X,d)$ to a metric space $(Y,\rho)$ is said to be {\bf uniformly continuous} if for every $\epsilon > 0$, $\exists$ $\delta > 0$ such that $\rho(f(x),f(y)) < \epsilon$ $\forall \;\; x,y \in X$ satisfying $d(x,y) < \delta$. \\
+\end{definition}
+
+{\bf Comments and examples}
+\begin{itemize}
+\item Uniform continuity and continuity are defined in very similar terms. The difference is that for uniform continuity $\epsilon$, $\delta$ must be the same for all points in the space, whereas for continuity $\delta$ can vary. 
+\item $f(x) = x^{2}, \;\; x \in \mathbb{R}$ is continuous but it is not uniformly continuous. Suppose that you set $d(x_{1},x_{2}) < \epsilon$. Use the standard metric in $\mathbb{R}$. Then if $x_{1} = 1$ we can set $\delta =\epsilon^{2} + 2\epsilon$ and we prove continuity. However if $x_{1}$ is not fixed, then we can't place a bounds on $\lvert x_{2}^{2} - x_{1}^{2} \rvert$. \\
+\end{itemize}
+
+\begin{definition}
+Let $(X,d)$ and $(Y,\rho)$ be metric spaces, and let $f_{n}:X \rightarrow Y$ and $f:X \rightarrow Y$. Then the sequence $\{ f_{n} \}$ is said to {\bf converge pointwise} to $f$ if for every $x \in X$ and for every $\epsilon > 0$, $\exists$ an index $N=N(x, \epsilon)$ such that \vspace{-6pt}
+\[ \rho(f_{n}(x), f(x)) < \epsilon \quad \forall \;\; n \geq N. \vspace{-6pt} \]
+The sequence $\{ f_{n} \}$ is said to {\bf converge uniformly} to $f$ if for every $\epsilon > 0$, $\exists$ an index $N=N(\epsilon)$ such that \vspace{-6pt} 
+\[ \rho(f_{n}(x), f(x)) < \epsilon \quad \forall \;\; n \geq N, \;\; x \in X. \vspace{-6pt} \]
+Equivalently $\{ f_{n} \}$ converges uniformly to $f$ on $X$ if \vspace{-6pt} 
+\[ \sup \{ \rho(f_{n}(x), f(x)) \vert x\in X \} \rightarrow 0. \vspace{+6pt} \]
+\end{definition}
+
+\begin{theorem}
+Let $\{ f_{n} \}$ be a sequence of \emph{continuous functions} from a metric space $(X,d)$ to a metric space $(Y,\rho)$. Suppose that $\{ f_{n} \}$ converges uniformly to $f$ from $X$ to $Y$. Then $f$ is continuous. 
+\end{theorem}
+
+\section{Complete Spaces}
+
+\subsection{Definition and basic theorems}
+
+\begin{definition}
+{\bf Cauchy sequence.} Let $(X,d)$ be a metric space and let $\{x_{n}\}$ be a sequence of points in $X$. We say that $\{x_{n}\}$ is \emph{Cauchy} (or satisfies the \emph{Cauchy condition}) if for every $\epsilon > 0$ $\exists$ $k \in \mathbb{N}$ such that \vspace{-6pt} 
+\[ d(x_{n}, x_{m}) < \epsilon \;\; \forall \;\; n,m \geq k. \]
+\end{definition}
+\begin{itemize}
+\item If $\{x_{n}\}$ is a Cauchy sequence then $d(x_{n}, x_{m}) \rightarrow 0$ as $n,m \rightarrow \infty$. \\ 
+\end{itemize}
+
+\begin{proposition} 
+{\bf Basic results.}
+\begin{itemize}
+\item If $\{x_{n}\}$ is a Cauchy sequence then $\{x_{n}\}$ is bounded. 
+\item If $\{x_{n}\}$ is convergent then $\{x_{n}\}$ is a Cauchy sequence.
+\item If $\{x_{n}\}$ is a Cauchy sequence and it contains a convergent subsequence then $\{x_{n}\}$ converges. \\
+\end{itemize}
+\end{proposition}
+
+\begin{definition}
+{\bf Complete metric space.} A metric space $(X,d)$ is called \emph{complete} if every Cauchy sequence $\{x_{n}\}$ in $X$ converges to some point in $X$. A subset $A$ of $X$ is called complete if A as a metric subspace of $(X,d)$ is complete, that is, if every Cauchy sequence $\{x_{n}\}$ in $A$ converges to a point in $A$. \vspace{6pt}
+\end{definition}
+
+{\bf Examples.}
+\begin{itemize}
+\item On the metric space $((0,1),\lvert \cdot \rvert)$ the sequence $\{ 1/n \}$ is Cauchy but does not converge. In $\mathbb{R}$ the sequence converges to $0$, but this point is not in the space. 
+\item An open ball in $\mathbb{R}^{n}$ is not complete. If we denote the open ball $B$, $\{x_n\} \in B$ and $x_{n} \rightarrow x$ with $x \in \partial B$ then the sequence is Cauchy but doesn't converge to a point in the set $B$. 
+\item $\mathbb{R}, \; \mathbb{R}^{n}, \; \mathbb{C}, \; \mathbb{C}^{n}$are all complete metric spaces with the usual Euclidean norm or any equivalent metric. 
+\item Any closed subset of $\mathbb{R}^{n}$ is complete. \vspace{6pt}
+\end{itemize}
+
+A subspace of a complete metric space may not be complete, but we do have the following results. \\
+
+\begin{theorem}
+{\bf Some simple theorems.}
+\begin{itemize}
+\item If $(X,d)$ is a complete metric space and $Y$ is a closed subspace of $X$ then $(Y,d)$ is complete. 
+\item If $(X,d)$ is a metric space, $Y \subset X$ and $(Y,d)$ is complete, then $Y$ is closed. 
+\item If $(X_{i},d_{i})$ are complete metric spaces for $i=1,\dots, m$ then the product $(X,d)$ is a complete metric space. \\
+\end{itemize}
+\end{theorem}
+
+\begin{theorem}
+The space $\mathbb{R}$ with the usual metric is complete. \vspace{6pt}
+\end{theorem}
+
+For the next theorem we need to introduce some new notation and define some new terms.
+\begin{itemize}
+\item $C(X,Y)$ is the space of continuous functions from $X$ to $Y$. 
+\item $f:X \rightarrow Y$ is {\bf bounded} if $f(X)$ is contained in a bounded subset of $Y$ (see section \ref{bounded}). 
+\item $C_{b}(X,Y)$ is the space of bounded continuous functions from $X$ to $Y$. 
+\item For $f,g \in C_{b}(X,Y)$ let $d'$ be the metric in $Y$. We set \vspace{-6pt}
+\[ \rho(f,g) := \sup \{ d'(f(x),g(x)) \vert x \in X \}. \vspace{+6pt} \]
+\end{itemize}
+
+\begin{theorem}
+The space $(C_{b}(X,Y), \rho)$ is a complete metric space if $(Y,d')$ is complete.
+\end{theorem}
+
+{\bf Remark.} To show that a space is complete you need to show that every Cauchy sequence has a limit in the space. A useful strategy is to relate a general Cauchy sequence in the space to a Cauchy sequence in a metric space which you know is complete. For an example see q.3(b) on problem set 4. 
+
+\subsection{Completions}
+
+\begin{definition}
+{\bf Completion.} If $X$ is a metric space then its completion, $\widehat{X}$, is a complete metric space in which $X$ is dense (i.e. $\overline{X} = \widehat{X}$). \\
+\end{definition}
+
+\begin{theorem}
+The completion of any metric space is unique.
+\end{theorem}
+
+\vspace{+6pt} The following two definitions and theorem provide a more rigorous definition of a completion and what we mean by unique.\\
+
+\begin{definition}
+{\bf Isometry.} A map $f:(X,d) \rightarrow (Y,\rho)$ is called an isometry if, for all $x,y \in X$, \vspace{-6pt}
+\[
+\rho(f(x),f(y)) = d(x,y).
+\vspace{-6pt}\]
+\end{definition}
+
+An isometry is always injective. If an isometry $f:X \rightarrow Y$ is surjective, then $f^{-1}:Y \rightarrow X$ is also an isometry. In this case the spaces $(X,d)$ and $(Y,\rho)$ are called {\bf isometric}. \\
+
+\begin{definition}
+A completion of a metric space $(X,D)$ is a pair consisting of a complete metric space $(\widehat{X},\widehat{d})$ and an isometry $\varphi:X \rightarrow \widehat{X}$ such that $\varphi(X)$ is dense in $\widehat{X}$.\\
+\end{definition}
+
+\begin{theorem}
+{\bf Uniqueness of the completion.} Let $(X,d)$ be a metric space. Then $(X,d)$ has a completion. The completion is unique in the following sense: If $((X_{1},d_{1}), \varphi_{1})$ and $((X_{2},d_{2}), \varphi_{2})$ are both completions of $(X,d)$, then $(X_{1},d_{1})$ and $(X_{2},d_{2})$ are isometric. That is, there exists a surjective isometry $f:X_{1} \rightarrow X_{2}$ such that $f \circ \varphi_{1} = \varphi_{2}$. 
+\end{theorem}
+
+\subsection{Structure of complete spaces: Baire's theorem}
+
+{\bf Some motivation.} Consider a sequence of open and dense sets $\{U_{n}\}$ in a metric space $(X,d)$. In general $\bigcap_{n\geq1} U_{n}$ may be empty. Baire's theorem provides that is $X$ is complete then $\bigcap_{n\geq1} U_{n}$ is not only non-empty, but dense. \\
+
+\begin{theorem}
+{\bf Baire theorem v1.} Let $(X,d)$ be a complete metric space, and let $\{U_{n}\}$ be a sequence of open and dense subsets of $X$. Then $\bigcap_{n\geq1} U_{n}$ is dense. \\
+\end{theorem}
+
+\begin{theorem}
+{\bf Baire theorem v2.} Let $(X,d)$ be a complete metric space, and let $\{F_{n}\}$ be a sequence of nowhere dense subsets of $X$ (i.e. $int \overline{F_{n}} = \emptyset$). Then $\bigcup_{n\geq1} F_{n}$ has empty interior. 
+\end{theorem}
+\begin{itemize}
+\item This theorem is often used in the opposite way to how it is stated here. Take a complete metric space $(X,d)$ and a sequence of subsets of $X$, $\{F_{n}\}$, such that $\bigcup_{n\geq1} F_{n} = X$. Then,  if $X$ has non-empty interior, at least one $F_{n}$ must have non-empty interior. \vspace{6pt}
+\end{itemize}
+
+{\bf Examples.}
+\begin{itemize}
+\item Take the metric space $\mathbb{R}$ with the standard metric. It is complete so it can't be written as a countable union of nowhere dense sets. Such a union must have empty interior, which $\mathbb{R}$ does not.
+\item  In contrast $\mathbb{Q}$ can be written as a union of nowhere dense subsets. It is not complete. Take the union of one point sets $\{q_{n}\}$, where $\{q_{n} \vert n \in \mathbb{N} \}$  is an enumeration of $\mathbb{Q}$. Every one point set $\{q_{n}\}$ is closed in $\mathbb{Q}$ and its interior is empty, so it's nowhere dense. \vspace{6pt}
+\end{itemize}
+
+The following theorem is an application of Baire's theorem.\\
+
+\begin{theorem}
+Let $(X,d)$ be a complete metric space, and let $\{f_{n}\}$ be a sequence of continuous functions $f_{n}: X \rightarrow \mathbb{R}$. Assume that the sequence $\{f_{n}\}$ is bounded for every $x \in X$. Then $\exists$ a non-empty open set $U \subset X$ on which the sequence $\{f_{n}\}$ is bounded. That is, there is a constant $M$ such that $\lvert f_{n}(x) \rvert \leq M \;\; \forall \;\; x\in U, \; n \in \mathbb{N}$.
+\end{theorem}
+\begin{itemize}
+\item The importance of this theorem is that it provides that for some open set $U \subset X$ there is a uniform bound (the same bound for all $x \in U$) for $\{f_{n}\}$.
+\end{itemize}
+
+\subsection{Applications of completeness in metric spaces}
+
+\subsubsection{Contraction mapping principle: Banach fixed point theorem}
+
+\begin{definition}
+{\bf Fixed point.} Let $(X,d)$ be a metric space and left $f:X \rightarrow X$. A point $x \in X$ is a fixed point of $f$ if $f(x) = x$.\\ 
+\end{definition}
+
+\begin{definition}
+{\bf Contraction.} A function $f:X \rightarrow X$ is a contraction if $\: \exists$ $\alpha \in (0,1)$ such that \vspace{-6pt}
+\[ d(f(x),f(y)) \leq \alpha d(x,y).  \vspace{-6pt} \]
+for all $x,y \in X$. A contraction is uniformly continuous.\\
+\end{definition}
+
+\begin{definition}
+{\bf Banach fixed point theorem.} Let $f:X \rightarrow X$ be a contraction of a complete metric space. Then $f$ has a unique fixed point $p$. For any $x \in X$, define $x_{0} = x$ and $x_{n+1} = f(x_{n})$ for $n \geq 0$. Then $x_{n} \rightarrow p$, and \vspace{-4pt}
+\[
+d(x,p) \leq \frac{d(x,f(x))}{1 - \alpha}.
+\]
+\end{definition}
+
+THIS SECTION IS INCOMPLETE. The material on pp.2-5 of part 3 of the notes on Picard's theorem and Lebesgue integrable functions is outstanding. 
+
+% I need to catch up pages 1-5 of part 3 of the notes on applications of complete metric spaces. This corresponds to lectures 5.1-5.3 and the first half of 6.1.  
+
+\section{Compact Metric Spaces}
+
+\subsection{Definition and basic theorems}
+
+\begin{theorem} \label{BWthm}
+{\bf Bolzano-Weierstrass.} Let $I$ be a closed and bounded interval in $\mathbb{R}$, and let $\{ x_{n} \}$ be a sequence in $I$. Then there exists a subsequence $\{ x_{n_{k}} \}$ which converges to a point in $I$. \\
+\end{theorem}
+
+\begin{definition}
+{\bf Compactness.} A metric space $(X,d)$ is compact if every sequence in $X$ has a convergent subsequence. A subspace $Y$ of $X$ is compact if every sequence in $Y$ has a subsequence converging to a point in $Y$. 
+\end{definition}
+\begin{itemize}
+\item If a sequence $\{ x_{n} \}$ has a subsequence $\{x_{n_{k}} \}$ that converges to $x$, then if $\{ x_{n} \}$ converges it must also converge to $x$. $\{ x_{n} \}$ cannot converge to a different point. \\ 
+\end{itemize}
+
+\begin{proposition}
+Let $(X,d)$ be compact and $Y$ be a closed subset of $X$. Then $Y$ is compact. \\
+\end{proposition}
+
+\begin{proposition} \label{comp ss closed and bounded}
+Let $X$ be a metric space and $Y$ a compact subset of $X$. Then $Y$ is closed and bounded. \\
+\end{proposition}
+
+\begin{theorem}
+A subset $Y$ of $\mathbb{R}$ is compact iff $Y$ is bounded and closed.
+\end{theorem}
+\begin{itemize}
+\item This result follows from Theorem \ref{BWthm} and Proposition \ref{comp ss closed and bounded}. 
+\item This result is valid in $\mathbb{R}^{n}$ with the standard metric. \\
+\end{itemize}
+
+\begin{theorem}
+Let $(X,d)$ and $(Y,d')$ be metric spaces and let $f:X \rightarrow Y$ be continuous. If a subset $K \subseteq X$ is compact, then $f(K)$ is compact in $(Y, d')$. In particular, if $(X,d)$ is compact, then $f(X)$ is compact in $Y$. 
+\end{theorem}
+\begin{itemize}
+\item It follows from proposition \ref{comp ss closed and bounded} that $f(K)$ and $f(X)$ are closed and bounded. \\
+\end{itemize}
+
+\begin{corollary}
+Let $f:X \rightarrow \mathbb{R}$ be a continuous function on a compact metric space. Then $f$ attains a maximum and a minimum value, that is, there exist $a,b \in X$ such that $f(a) = \inf \{ f(x) \vert x \in X \}$ and $f(b) = \sup \{ f(x) \vert x \in X \}$. \\
+\end{corollary}
+
+\begin{theorem}
+Suppose $f: (X,d) \rightarrow (Y,d')$ is a continuous mapping defined on a compact metric space $X$. Then $f$ is uniformly continuous. 
+\end{theorem}
+
+\subsection{Characterisation of compactness for metric spaces}
+
+\begin{definition}
+Let $(X,d)$ be a metric space and let $A \subseteq X$. If $\{ U_{i} \}_{i \in I}$ is a family of subsets of $X$ such that $A \subseteq \bigcup_{i \in I} U_{i}$, then it is called a {\bf cover} and $A$, and $A$ is said to be {\bf covered} by the $U_{i}$'s. If each $U_{i}$ is open, then $\{ U_{i} \}_{i \in I}$ is an {\bf open cover}. If $J \subset I$ and still $A \subseteq \bigcup_{i \in J} U_{i}$, then $\{ U_{i} \}_{i \in J}$ is a {\bf subcover}. \\ 
+\end{definition}
+
+\begin{definition}
+{\bf Heine-Borel property.} Let $(X,d)$ be a metric space and let $A \subseteq X$. Then $A$ has the Heine-Borel property if for every open cover $\{ U_{i} \}_{i \in I}$ of $A$, there is a finite set $F \subseteq I$ such that $A \subseteq \bigcup_{i \in F} U_{i}$. \\
+\end{definition} 
+
+\begin{definition}
+Let $(X,d)$ be a metric space and $A \subseteq X$. Let $\epsilon > 0$. A subset $S$ is called an $\boldsymbol{\epsilon}${\bf-net} for $A$ if $A \subseteq \bigcup_{x \in S} B(x,\epsilon)$. A set $A$ is called {\bf totally bounded} if, for every $\epsilon > 0$, there is a finite $\epsilon$-net for $A$. That is, for every $\epsilon > 0$, there is a finite set $S$ such that $A \subseteq \bigcup_{x \in S} B(x, \epsilon)$. 
+\end{definition}
+\begin{itemize}
+\item Note that every totally bounded set is bounded, but the converse is generally false. \vspace{6pt}
+\end{itemize}
+
+{\bf Example.} Consider $(\mathbb{R},d)$ with $d(x,y) = \min \{ \lvert x - y \rvert, 1 \}$. Then $(\mathbb{R},d)$ is bounded since $d(x,y) \leq 1$ $\forall$ $x,y \in \mathbb{R}$. $(\mathbb{R},d)$ is not totally bounded since it cannot be covered by a finite number of balls with radius $\frac{1}{2}$. Let $S$ be any finite subset of $\mathbb{R}$ and let $x$ be the largest number in $S$. If $y \in S$, then $d(x+1,y) = \min \{ \lvert x +1 - y \rvert, 1 \} = 1$ and so there is no $\frac{1}{2}$ net for $\mathbb{R}$. \\
+
+\begin{theorem} \label{charact. of compactness}
+Let $A$ be a subset of a metric space $(X,d)$. Then the following conditions are equivalent:
+\begin{enumerate}
+\item $A$ is compact.
+\item $A$ is complete and totally bounded. 
+\item $A$ has the Heine-Borel property. 
+\end{enumerate}
+\end{theorem}
+
+\section{Topological Spaces} 
+
+\subsection{Topological spaces and homeomorphisms}
+
+\begin{definition}
+{\bf Topological space.} Let $X$ be a set and $\mathcal{T}$ be a collection of subsets of $X$. $\mathcal{T}$ is a topology on $X$, with this topological space denoted $(X,\mathcal{T})$, if it has the following properties:
+\begin{enumerate}
+\item $\emptyset$, $X$ are in $\mathcal{T}$,
+\item the intersection of any finite collection of sets in $\mathcal{T}$ is in $\mathcal{T}$,
+\item any arbitrary union of sets in $\mathcal{T}$ is in $\mathcal{T}$. \\
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+{\bf Discrete and indiscrete topologies.} Any set $X$ can be equipped with two extreme topologies. The family $\mathcal{T} = \{ \emptyset, X \}$ is the smallest topology, called the \emph{indiscrete topology} on $X$. The family of all subsets of $X$ is the largest topology on $X$, called the \emph{discrete topology} on $X$. \vspace{6pt}  
+\end{definition}
+
+{\bf Other examples.} 
+\begin{itemize}
+\item There are many ways to define a topology on $\mathbb{R}$. The most common way is to define $\mathcal{T}$ as the set of all open intervals on $\mathbb{R}$.
+\item Similarly the most common way to define $\mathcal{T}$ on $\mathbb{R}^{n}$ is as the set of all open balls. In this topology we can think of open and closed sets in the same way as we do in the corresponding metric space. \\
+\end{itemize}
+
+\begin{definition}
+Suppose $(X, \mathcal{T})$, $(Y, \mathcal{T}')$ are topological spaces. A map $f:X \rightarrow Y$ is {\bf continuous} if, whenever $U$ is an open subset of $Y$, $f^{-1}(U)$ is open in $X$. A {\bf homeomorphism} is a mapping $\phi: X \rightarrow Y$ which is a continuous bijection so that its inverse $\phi^{-1}$ is also continuous.  
+\end{definition}
+\begin{itemize}
+\item If $f$ is continuous and $V$ is closed in $Y$, $f^{-1}(V)$ is closed in $X$. \vspace{-5pt}
+\item If $\phi : X \rightarrow Y$ is a homeomorphism and $A \subset X$, then $\phi \vert_{X \setminus A} : X \setminus A \rightarrow Y \setminus \phi(A)$ is also a homeomorphism. 
+\end{itemize}
+
+\subsection{Hausdorff and normal spaces}
+
+\begin{definition}
+A topological space $X$ is called a {\bf Hausdorff space} if for every two points $x,y \in X$ such that $x \neq y$, there exist disjoint open sets $U$ and $V$ satisfying $x \in U$ and $y \in V$. A space $X$ is {\bf normal} if for each pair $A,B$ of disjoint closed subsets of $X$, there exist disjoint open sets $U$ and $V$ such that $A \subset U$ and $B \subset V$. \\
+\end{definition}
+
+Every metric space is Hausdorff and normal, but this isn't easy to prove. 
+
+\section{Compact Topological Spaces}
+
+In theorem \ref{charact. of compactness} we provided three characterisations of compactness. In the case of general topological spaces the Heine-Borel property is the most useful. \\
+
+\begin{definition}
+{\bf Compact topological space.} A subset $Y$ of a topological space $(X, \mathcal{T})$ is called compact if for every collection $\mathcal{U} = \{ U_{i} \}_{i \in I}$ of open sets of $X$ such that $Y \subseteq \bigcup_{i \in I} U_{i}$, there is a finite $J \subseteq I$ for which $Y \subseteq \bigcup_{i \in J} U_{i}$. \\   
+\end{definition}
+
+\begin{definition}
+{\bf Finite intersection property.} A family $\{F_{i}\}_{i \in I}$ of closed subsets of $X$ is said to have the finite intersection property if $\bigcap_{i \in J} F_{i} \neq \emptyset$ for all finite $J \subseteq I$. \\
+\end{definition}
+
+\begin{theorem}
+A topological space $X$ is compact iff for every family $\{F_{i}\}_{i \in I}$ of closed subsets of $X$ having the finite intersection property, $\bigcap_{i \in I} F_{i} \neq \emptyset$.
+\end{theorem}
+
+{\bf Example.} The following is an illustration of a set which doesn't satisfy the requirements of the preceding theorem. Consider the set $\mathbb{Q} \cap [a,b]$, where $a,b \in \mathbb{Q}$ and $a<b$. Pick some irrational $x \in [a,b]$. The family of sets $\{ F_{n} \}$, $F_{n} = [x - \frac{1}{n}, x + \frac{1}{n}] \cap \mathbb{Q}$ has the F.I.P.  However, $\bigcap_{n=1}^{\infty} F_{n} = \emptyset$ (it would include $x$, but $x$ is irrational). \\
+
+\begin{theorem} \label{closed subspace compact}
+A closed subspace of a compact topological space is compact.
+\end{theorem}
+\begin{itemize}
+\item A {\bf closed subset} $K$ of a topological space $X$ is a set whose complement, $K^{c}$, is open in $X$. \vspace{12pt}
+\end{itemize}
+
+\begin{theorem} \label{compact subset of Hausdorff closed}
+If $X$ is a Hausdorff space then every compact subset of $X$ is closed. \\
+\end{theorem}
+
+\begin{theorem}
+A compact Hausdorff space is normal. \\
+\end{theorem}
+
+\begin{theorem} \label{K compact, f cts, f(K) compact}
+Suppose that $f: X \rightarrow Y$ is a continuous map between topological spaces $X$ and $Y$. If $K \subseteq X$ is a compact set, then $f(K)$ is a compact subset of $Y$. In particular, if $X$ is compact, then $f(X)$ is compact. \\
+\end{theorem}
+
+\begin{theorem}
+Let $f: X \rightarrow Y$ be a continuous bijective function from a compact topological space $X$ to a Hausdorff topological space $Y$. Then the inverse function $f^{-1}: Y \rightarrow X$ is continuous. 
+\end{theorem}
+\begin{itemize}
+\item This theorem follows from theorems \ref{closed subspace compact}, \ref{compact subset of Hausdorff closed} and \ref{K compact, f cts, f(K) compact}.
+\end{itemize}
+
+\section{Connected Spaces}
+
+\subsection{Definitions and essential theorem}
+
+\begin{definition}
+{\bf Connected and disconnected spaces.} 
+\begin{itemize}
+\item A pair of non-empty and open sets $U,V$ of a topological space $X$ is called a {\bf separation} of $X$ if $U \cap V = \emptyset$ and $X = U \cup V$. 
+\item A topological space $X$ is {\bf disconnected} if there is a separation of $X$. Otherwise it is {\bf connected}. 
+\item A subset $Y$ of $X$ is connected if it is not the union of two non-empty sets $U,V \in \mathcal{T}_{Y}$ such that $U \cap V = \emptyset$. 
+\end{itemize}
+\end{definition}
+
+{\bf Examples.}
+\begin{itemize}
+\item The set $X$ containing at least two points and considered with the discrete topology (take all possible subsets) is disconnected. $X$ with the indiscrete topology $(\mathcal{T} = \{\emptyset, X\})$ is connected because we don't have two non-empty sets to form a separation with.  
+\item The subspace $\mathbb{R} \setminus \{0\}$ of $\mathbb{R}$ is disconnected since $\mathbb{R} \setminus \{0\} = A \cup B$, where $A = \{r \in \mathbb{R}: r < 0 \}$ and $B = \{r \in \mathbb{R}: r > 0 \}$.\\
+\end{itemize}
+
+\begin{definition}
+{\bf Two-valued function.} A ``two-valued'' function is a function from $X$ to $\{0,1\}$, where $\{0,1\}$ is considered with discrete topology.  \\
+\end{definition}
+
+\begin{theorem}
+A space $X$ is connected iff every two-valued continuous function on $X$ is constant (all elements in $X$ get mapped to 0 or all elements in $X$ get mapped to 1). Equivalently, $X$ is disconnected iff there exists a two-valued continuous function from $X$ onto $\{0,1\}$.
+\end{theorem}
+\begin{itemize} \vspace{-6pt}
+\item This seems to be THE theorem to use when you want to prove that a space is connected. \vspace{-6pt}
+\item Typically, to prove that $X$ is connected using this theorem, you start by taking any continuous two-valued function on $X$ and then prove that it must be constant. 
+\end{itemize}
+
+\subsection{Further theorems}
+
+\begin{theorem}
+Let $f : X \rightarrow Y$ be a continuous function between spaces $X$ and $Y$. If $X$ is connected, then the image $f(X)$ is connected. \\
+\end{theorem}
+
+\begin{theorem}
+If $A$ is a connected subset of a space $X$, then $\overline{A}$ is also connected. \\
+\end{theorem}
+
+\begin{theorem}
+If $\{A_{i}\}_{i \in I}$ is a family of connected subsets of $X$ such that $\bigcap_{i \in I} A_{i} \neq \emptyset$, then $A = \bigcup_{i \in I} A_{i}$ is connected. 
+\end{theorem}
+
+An application of this theorem is the next theorem. \\
+
+\begin{theorem}
+Suppose that for any two points in a space $X$ there exists a connected subspace of $X$ containing these two points. Then $X$ is connected.
+\end{theorem}
+
+\subsection{Components}
+
+\begin{definition}
+{\bf Component.} Let $x \in X$ and let $C_{x}$ be the union of all the connected subsets of $X$ containing $x$. Each $C_{x}$ is called a  component (or connected component) of $X$. \\
+\end{definition}
+
+\begin{proposition}
+Let $C_{x}$ be the connected component of $X$ containing $x$. Then 
+\begin{enumerate}
+\item for each $x \in X$, $C_{x}$ is connected and closed; and
+\item for any two $x,y \in X$, either $C_{x} = C_{y}$ or $C_{x} \cap C_{y} = \emptyset$. \\
+\end{enumerate}
+\end{proposition}
+
+\begin{corollary}
+Any topological space $X$ has a unique partition into its connected components. 
+\end{corollary}
+
+\subsection{Intervals}
+
+\begin{definition}
+{\bf Interval of $\mathbb{R}$.} An interval $I \subset \mathbb{R}$ is a subset of $\mathbb{R}$ with the property that if $x,y \in I$ and $x \leq z \leq y$, then $z \in I$. \\ 
+\end{definition}
+
+\begin{theorem}
+A subset of $\mathbb{R}$ is connected iff it is an interval.
+\end{theorem}
+
+{\bf Application.} Any open set $U \in \mathbb{R}$ is a countable union of pairwise disjoint open intervals. \\  
+
+\begin{theorem}
+{\bf Intermediate value theorem.} Let $f : X \rightarrow \mathbb{R}$ be a continuous function defined on a connected space $X$. Then for any $x,y \in X$ and any $r \in \mathbb{R}$ such that $f(x) \leq r \leq f(y)$ there exists $c \in X$ such that $f(c) = r$. \\
+\end{theorem}
+
+\subsection{Path connected spaces}
+
+\begin{definition}
+{\bf Path connected.} A space $X$ is called path connected if for any two points $p,q \in X$ there exists a continuous function $f: [0,1] \rightarrow X$ such that $f(0) = p$ and $f(1) = q$. The function $f$ is called a {\bf path} from $f(0)$ to $f(1)$.
+\end{definition}
+\begin{itemize}
+\item If $X \subseteq \mathbb{R}^{2}$ then $X$ is path connected there is a continuous path between any two points $x,y \in X$.  \\
+\end{itemize}
+
+\begin{theorem}
+If $X$ is path connected then $X$ is connected (but the converse is false in general).
+\end{theorem}
+
+\newpage
+
+\part{Linear Analysis}
+
+\section{Banach Spaces}
+
+\begin{definition}
+{\bf Banach space.} Recall that in Definition \ref{norms} we defined a normed vector space and in Proposition \ref{norm to metric} we noted that we can define a metric space from a normed vector space. If this metric space is complete then we call it a Banach space.  
+\end{definition}
+
+For the next theorem recall that a series $\sum_{n} a_{n}$ converges norm absolutely if the series of norms $\sum_{n} \Vert a_{n} \Vert$ converges. \\
+
+\begin{theorem}
+Convergence in normed and Banach spaces. 
+\begin{itemize} 
+\item In a Banach space $(V, \Vert \cdot \Vert)$, every norm-absolutely convergent sequence is convergent. 
+\item Conversely, if a normed space $(V, \Vert \cdot \Vert)$ has the property that every norm-absolutely convergent sequence is convergent, then $(V, \Vert \cdot \Vert)$ is a Banach space.   \\
+\end{itemize}
+\end{theorem}
+
+\begin{definition}
+A {\bf Schauder basis} is a countable set $\mathcal{B}$ in a normed space $(V, \Vert \cdot \Vert)$ with the property that every element of $V$ can be written as a unique series in $\mathcal{B}$.
+\end{definition}
+\begin{itemize}
+\item If $V$ is a finite dimensional space and $\mathcal{B}$ is a Schauder basis for $V$ then $<\mathcal{B}> = V$. Now, $<\mathcal{B}>$ represents all finite linear combinations of the elements of $\mathcal{B}$. Therefore if $V$ is infinite dimensional then $<\mathcal{B}> \neq V$. Instead, $\overline{<\mathcal{B}>} = V$. \\
+\end{itemize}
+
+\begin{definition}
+A {\bf total set} $A$ in a normed space $(V, \Vert \cdot \Vert)$ has the property that the span $<A>$ of $A$ is dense in V, i.e. $\overline{<A>} = V$. \\
+\end{definition}
+
+\begin{theorem}
+Any Schauder basis in a normed space $(V, \Vert \cdot \Vert)$ is a total set. \vspace{+6pt}
+\end{theorem}
+
+{\bf Comment.} Note that the Schauder basis and the total set are slightly different concepts. The Schauder basis is a  narrower concept. The elements of a Schauder basis must be linearly independent so that every $x \in V$ is the limit of a unique series. This is not necessary for a total set. \\
+
+\begin{definition}
+A metric space $(X,d)$ is called {\bf separable} if it has a countable dense subset. \\
+\end{definition}
+
+\begin{corollary}
+A normed space with a Schauder basis is separable. 
+\end{corollary}
+\begin{itemize}
+\item The idea is that in a normed space $(V, \Vert \cdot \Vert)$ a Schauder basis is countable and the closure of its span equals $V$. We can therefore form a countable set that is dense in $V$ using countable linear combinations of the Schauder basis. 
+\item Note that the converse is not true: if a normed space is separable, it doesn't necessarily have a Schauder basis. In contrast, this is the case for a Hilbert space (see theorem \ref{sch basis for H space}). 
+\end{itemize}
+
+{\bf Examples.}
+\begin{itemize}
+\item $l_{p}$ with the norm $\Vert a_{1}, \dots, a_{n}, \dots \Vert_{p} = [ \sum_{n} (\vert a_{n} \vert)^{p} ]^{\frac{1}{p}}$, where $p \geq 1$, is a Banach space. It has a Schauder basis $\{ e_{1}, e_{2}, \dots \}$ with $e_{i} = (0,0,\dots,0,1,0, \dots)$ where the single $1$ is in the $i^{th}$ position. 
+\item $l^{\infty}$ with the norm $\Vert a_{1}, \dots, a_{n}, \dots \Vert_{\infty} = \sup \{a_{i}, 1 \leq i\}$ is also a Banach space with the same Schauder basis. 
+\item $C_{b}(X,F)$, with $F = \mathbb{R}$ or $F=\mathbb{C}$, with the norm $\Vert f \Vert = \sup \{ \vert f(x) \vert: x \in X \}$ is a Banach space. If $X = [0,1]$ and $F = \mathbb{R}$ then the set of polynomials is dense in this space (not proved). Furthermore, if we limit ourselves to polynomials with rational coefficients we can create all polynomials because any irrational number is the limit of a sequence of rational numbers. The set of polynomials with rational coefficients is also countable. Therefore this set is dense in $C_{b}([0,1],\mathbb{R})$  
+\end{itemize}
+
+\section{Hilbert Spaces}
+
+In this section we're interested in inner product spaces. We will assume that the scalars for these spaces are the real or complex numbers.  
+
+\subsection{Revision}
+
+Note that everything in this section applies to both finite and infinite dimensional vector spaces. \\ 
+
+\begin{definition}
+{\bf Vector space.} A set $V$ is a vector space over a field $F$ if it is closed under addition and scalar multiplication, and satisfies the following axioms:
+\begin{enumerate}
+\item $u + (v + w) = (u + v) + w \;\; \forall \;\; u,v,w \in V$;
+\item $\exists \; 0 \in V$ such that $0 + v = v + 0 = v \;\; \forall \;\; v \in V$;
+\item for each $v \in V \; \exists \; -v \in V$ such that $v + (-v) = (-v) + v = 0$; 
+\item $u + v = v + u \;\; \forall \;\; u,v \in V$;
+\item $a(u + v) = au + av \;\; \forall \;\; a \in F, \; u,v \in V$; 
+\item $(a + b)v = av + bv \;\; \forall \;\; a,b \in F, \; v \in V$; 
+\item $(ab)v = a(bv) \;\; \forall \;\; a,b \in F, \; v \in V$;
+\item $1\times v = v \;\; \forall \;\; v \in V$. \\
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+{\bf Subspace.} A subset $W$ of a vector space $V$ is a subspace iff it is (1) non-empty, (2) closed under addition and (3) closed under scalar multiplication. 
+\end{definition}
+
+In the complex case an inner product is defined as follows.\\
+
+\begin{definition}
+{\bf Complex inner product.} Suppose that $V$ is a complex vector space. An inner product is a mapping $V \times V \rightarrow \mathbb{C}$ satisfying:
+\begin{enumerate}
+\item $< x,x > \: \geq 0 \;\; \forall \;\; x \in V$,
+\item $< x,x > = 0 \;\; \Rightarrow \;\; x = 0$,
+\item $< x,y > = \overline{< y,x >} \;\; \forall \;\; x,y \in V$, 
+\item $< x+y,z > = < x,z > + < y,z > \;\; \forall \;\; x,y,z \in V$,
+\item $< \lambda x,y > = \lambda< x,y > \;\; \forall \;\; x,y \in V \text{ and } \lambda \in \mathbb{C}$. 
+\end{enumerate}
+This is also called a {\bf Hermitian inner product}. 
+\end{definition}
+\begin{itemize}
+\item It follows from these properties that the inner product is linear in the second element also: \vspace{-10pt}
+\[ < x,y+z > = < x,y > + < x,z > \;\; \forall \;\; x,y,z \in V \vspace{-10pt} \]
+\item For a real inner product replace requirement (3) with $< x,y > = < y,x > \;\; \forall \;\; x,y \in V$, 
+\end{itemize}
+
+{\bf Example.} The standard inner product in $\mathbb{C}^{n}$ is $<(x_{1}, \dots, x_{n}), (y_{1}, \dots, y_{n})> = \sum_{i} x_{i}\overline{y}_{i}$. \\
+
+\begin{definition}
+{\bf Orthogonal vectors.} Two vectors $u,v \in V$ are orthogonal if $< u,v > = 0$. 
+\end{definition}
+\begin{itemize} \vspace{-5pt}
+\item The zero vector is orthogonal to itself. \\
+\end{itemize}
+
+\begin{proposition}
+{\bf Cauchy-Schwarz inequality.} If $x, y$ are elements of an inner product space then $\vert < x,y > \vert \leq \Vert x \Vert \cdot \Vert y \Vert$.
+\end{proposition}
+\begin{itemize}
+\item This is the general form of the result given in lemma \ref{C-S inequality}. 
+\item A consequence of this inequality is that the inner product, $<\cdot,\cdot> \: : V \times V \rightarrow \mathbb{C}$ (or $\mathbb{R}$) is continuous. This means that if $\{x_{n} \}, \{y_
+{n} \}$ are sequences in $V$ and $x_{n} \rightarrow x$, $y_{n} \rightarrow y$, then $<x_{n},y_{n}> \rightarrow <x,y>$. \\
+\end{itemize}
+
+\begin{definition}
+{\bf Inner product space.} An inner product space is a vector space combined with an inner product. \\
+\end{definition}
+
+\begin{definition} \label{linear transformation}
+{\bf Linear transformation.} If $V$ and $W$ are vector spaces over the same field $F$ then $T: V \rightarrow W$ is a linear transformation (also called a linear operator) if 
+\begin{enumerate}
+\item $T(u + v) = T(u) + T(v) \;\; \forall \;\; u,v \in V$,
+\item $T(\lambda v) = \lambda T(v) \;\; \forall \;\; \lambda \in F, \: v \in V$.\\
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+{\bf Null space (kernel).} The nullspace or kernel of a linear transformation $T : V \rightarrow \mathbb{R}^{n}$ is the set $\{ v \in V: f(v) = 0\}$. \\
+\end{definition}
+
+\begin{definition}
+{\bf Eigenvalues, eigenvectors and eigenspaces.} If $T:V \rightarrow W$ is a linear transformation (with a field $F$) and $T(v) = \lambda v$ for some $v \in V$ and $\lambda \in F$ then $\lambda$ is an \emph{eigenvalue} of $T$ and $v$ is an \emph{eigenvector} corresponding to $\lambda$. For a fixed eigenvalue $\lambda$ the set of vectors $\{ v \in V : T(v) = \lambda v \}$ is a subspace of $V$ called the \emph{eigenspace} corresponding to $\lambda$. \\
+\end{definition}
+
+\begin{proposition}
+If $\lambda$ and $\gamma$ are two different eigenvalues of a linear transformation $T : V \rightarrow W$ ($\lambda \neq \gamma$), $V_{\lambda}$ and $V_{\gamma}$ are the corresponding eigenspaces, and $T$ can be represented by a symmetric matrix, then $V_{\lambda} \perp V_{\gamma}$.
+\end{proposition}
+
+\subsection{Hilbert spaces}
+
+\begin{definition}
+{\bf Hilbert space.} Suppose that $(V, <,>)$ is an inner product space. $V$ is called a Hilbert space if it is complete as a metric space using the norm $\Vert x \Vert = \sqrt{<x,x>}$. \\
+\end{definition}
+
+To determine whether a norm can be induced from an inner product (and therefore whether a metric space can be a Hilbert space) we use the following theorem.\\
+
+\begin{theorem}
+Any norm coming from an inner product satisfies the parallelogram law \vspace{-5pt}
+\[
+\Vert x + y \Vert^{2} + \Vert x - y \Vert^{2} = 2\Vert x \Vert^{2} + 2 \Vert y \Vert^{2}. \vspace{-5pt}
+\]
+Conversely, a norm satisfying the parallelogram law for a complex vector space comes from an inner product defined by \vspace{-10pt}
+\begin{align*}
+< x,y > \: = \: &\frac{1}{4} \big( \Vert x + y \Vert^{2} - \Vert x - y \Vert^{2} \\
+&+ i\Vert x + iy \Vert^{2} - i\Vert x - iy \Vert^{2} \big). \vspace{-5pt}
+\end{align*} 
+\end{theorem}
+
+\subsection{Orthonormal sets}
+
+\begin{definition}
+{\bf Linearly independent set.} Take a set $\{v_{1}, \dots, v_{n} \}$ in a vector space $V$. This set is linearly independent if $\sum_{i=1}^{n} \lambda_{i} v_{i} = 0 \; \Rightarrow \; \lambda_{i} = 0 \;\; \forall \;\; i$ for any set $\{ \lambda_{1}, \dots, \lambda_{n} \} \in F$. \\
+\end{definition}
+
+\begin{definition}
+{\bf Orthonormal set.} A subset $A$ of an inner product space is orthonormal if every pair of elements in $A$ is orthogonal and each vector in $A$ has unit length. In other words, if $a_{i},a_{j} \in A$, $< a_{i},a_{j} > = 0$ if $i \neq j$ and $< a_{i},a_{j} > = 1$ if $i = j$. \\
+\end{definition}
+
+Recall that an orthonormal set is linearly independent. \\
+
+\begin{definition}
+{\bf Gram-Schmidt procedure.} This procedure converts a basis $\{v_{1}, \dots, v_{n} \}$ for a vector space $V$ to an orthonormal basis. The orthonormal basis is $\{w_{1}, \dots, w_{n} \}$ where \vspace{-5pt}
+\begin{align*}
+w_{1} &= \frac{v_{1}}{\Vert v_{1} \Vert} \\
+w_{2} &= \frac{v_{2} - <v_{2},w_{1}>w_{1}}{\Vert v_{2} - <v_{2},w_{1}>w_{1} \Vert} \\
+\dots \\
+w_{n} &= \frac{v_{k} - <v_{k},w_{1}>w_{1} - \dots - <v_{k},w_{k-1}>w_{k-1}}{\Vert v_{k} - <v_{k},w_{1}>w_{1} - \dots - <v_{k},w_{k-1}>w_{k-1} \Vert}. 
+\end{align*} 
+\end{definition} \vspace{5pt}
+
+\begin{proposition}
+{\bf Uniqueness of orthonormal representation.} If a set $A \subset V$ is a orthonormal basis for a vector space $V$, then there is a unique series representation for any $v \in V$ in terms of $A$. 
+\end{proposition}
+
+\subsection{Orthogonal projection}
+
+\begin{definition}
+{\bf Orthogonal complement.} For a subspace $W$ of an inner product space $V$, the orthogonal complement is defined as $W^{\bot}= \{ v \in V : \: < v,w > = 0 \;\; \forall \;\; w \in W \}$.
+\end{definition}
+\begin{itemize}
+\item $W \cap W^{\bot} = \{ 0 \}$. If $x \in W \cap W^{\bot}$ it must be the case that $<x,x> = 0 \Rightarrow x = 0$. 
+\item If $\{a_{1}, \dots, a_{n} \}$ is a basis for $W$, to prove that $u \in W^{\bot}$ it suffices to show that $u \perp a_{i} \;\; \forall \;\; i$. \vspace{5pt}
+\end{itemize}
+
+Now we turn to orthogonal projections. If $W$ is a finite dimensional subspace of an inner product space with an orthonormal basis $\{a_{1}, \dots, a_{k} \}$ then the mapping $P : v \rightarrow \sum_{i=1}^{k} < v,a_{i} > a_{i}$ is the orthogonal projection onto $W$. $v - P(v)$ is an element of $W^{\bot}$. Also note that $P$ is a linear mapping. We can generalise the definition of an orthogonal projection as follows.\\
+
+\begin{definition}
+{\bf Orthogonal projection.} Suppose that $W$ is any subspace of an inner product space. Then $W$ admits an orthogonal projection if there is a linear mapping $P: V \rightarrow W$ with the properties that $P(v) \in W$ and $v - P(v) \in W^{\bot}$ for all $v \in V$.
+\end{definition}
+\begin{itemize}
+\item If $W$ is a subspace of a Hilbert space $V$ and $v \in V$, $\Vert v \Vert^{2} = \Vert P(v) \Vert^{2} + \Vert v - P(v) \Vert^{2}$. \\
+\end{itemize}
+
+\begin{proposition}
+{\bf Uniqueness of orthogonal projection.} If a subspace $W$ admits an orthogonal projection $P$, then $P$ is unique.\\
+\end{proposition}
+
+\begin{definition}
+{\bf Direct sum.} If $U$ and $W$ are subspaces of $V$ such that $U \cap V = \{ 0 \}$ and $U + W = V$, then we say that $V$ is the direct sum of $U$ and $W$, $V = U \oplus W$. \\
+\end{definition}
+
+\begin{theorem}
+If $W$ is a closed subspace of a Hilbert space $V$, then $V = W \oplus W^{\bot}$. \\
+\end{theorem}
+
+\begin{corollary}
+If a subspace $W$ of a Hilbert space admits an orthogonal projection $P$ then $V = W \oplus W^{\bot}$. Conversely, if $V = W \oplus W^{\bot}$ then $W$ admits an orthogonal projection. \vspace{5pt}
+\end{corollary}
+
+We next consider the key result that a subspace of a Hilbert space admits an orthogonal projection iff it is closed. In the next two theorems we prove as much of this result as is necessary for our purposes. \\
+
+\begin{theorem}
+Suppose that $W$ is a subspace of a Hilbert Space $V$. If there is an orthogonal projection $P$ onto $W$ then $W$ is closed. \\
+\end{theorem}
+
+\begin{theorem}
+Suppose that $\{ a_{n} \}$ is an orthonormal sequence in a Hilbert space $V$ and let $W$ be the subspace spanned by $\{ a_{n} \}$. Then the subspace $M = \overline{W}$ admits an orthogonal projection $P$ given by the Fourier series \vspace{-5pt}
+\[
+P(x) = \sum_{n} < x,a_{n} > a_{n}. \vspace{-5pt}
+\]
+The sum is independent of the order of the terms. The elements of the sequence $\{ < x,a_{n} > \}$ are called the \emph{Fourier coefficients} of $x$.
+\end{theorem}
+\begin{itemize}
+\item If you have an orthonormal basis $\mathcal{B}$ for a Hilbert space $V$ then, for any $x \in V$, $x = \sum_{u \in \mathcal{B}} <x,u>u$. \\
+\end{itemize}
+
+\begin{theorem} \label{sch basis for H space}
+Suppose that a Hilbert space $V$ has a countable orthonormal set $\{ a_{n} \}$ which is a total set (its span is dense in $V$). Then $\{ a_{n} \}$ is a Schauder basis for $V$. 
+\end{theorem}
+\begin{itemize}
+\item If a Hilbert space has a countable total set, then using the Gram-Schmidt procedure we can get a countable total orthonormal set. 
+\item If a Hilbert space is separable it has a countable dense subset. We can reduce this subset to a countable orthonormal set, which will be a countable total set. The theorem then applies. Therefore any separable Hilbert space has a Schauder basis. We call this Schauder basis an {\bf orthonormal basis} for the separable Hilbert space $V$. 
+\end{itemize}
+
+The following is an important example. \\
+
+\begin{theorem}
+The functions \vspace{-5pt}
+\[
+e_{m}(t) = \frac{1}{\sqrt{2\pi}}e^{imt}, \quad m = 0, \pm1, \pm2, \dots \vspace{-5pt}
+\]
+from an orthonormal basis for the space of complex functions $L^{2}[0,2\pi]$. \\
+\end{theorem}
+
+\section{Linear Operators}
+
+Before proceeding recall the definition of a linear transformation (see definition \ref{linear transformation}). \\
+
+\begin{definition}
+{\bf Bounded linear transformation.} A linear transformation $T : V \rightarrow W$ between two normed spaces is called bounded if there is a constant $c$ such that $\Vert Tx \Vert \leq c \Vert x \Vert \;\; \forall \;\; x \in V$. 
+\end{definition}
+\begin{itemize}
+\item If $V$ is finite dimensional then any linear transformation is bounded. 
+\item If $V$ is infinite dimensional then linear transformations need not be bounded.\\
+\end{itemize}
+
+\begin{definition} \label{operator norm}
+{\bf Operator norm.} If $T : V \rightarrow W$ is a bounded linear operator then the operator norm, $\Vert T \Vert$, is \vspace{-7pt}
+\[
+\Vert T \Vert = \sup_{x \neq 0} \frac{\Vert Tx \Vert}{\Vert x \Vert}. \vspace{-8pt}
+\]
+\end{definition}
+\begin{itemize}
+\item An equivalent definition is \vspace{-5pt}
+\[
+\Vert T \Vert = \sup_{\Vert x \Vert = 1} \Vert Tx \Vert. \vspace{-5pt}
+\]
+\item Combining this with the previous definition gives the result that $\Vert Tx \Vert \leq \Vert T \Vert \Vert x \Vert \;\; \forall \;\; x \in V$. 
+\end{itemize}
+
+\subsection{Equivalence of boundeness and continuity}
+
+\begin{theorem}
+{\bf Uniform continuity of bounded linear operators.} If $T : V \rightarrow W$ is a bounded linear operator, then $T$ is uniformly continuous. \\
+\end{theorem}
+
+\begin{theorem}
+If $T : V \rightarrow W$ is a continuous linear operator then $T$ is bounded. 
+\end{theorem}
+
+{\bf Example. Fredholm integral operators.} Let $J = [a,b]$ and let $k : J \times J \rightarrow \mathbb{C}$ be a continuous function of two variables. Let $X$ be the space of all continuous complex functions on $J$ with the supremum norm ($\Vert x \Vert = \sup_{t} \{ \vert x(t) \vert : t \in [a,b] \}$). This is a Banach space. We define the \emph{Fredholm operator} as follows: for any function $x \in X$, $Tx$ is a new function on $J$ defined by $Tx(t) = \int_{a}^{b} k(t,s)x(s) \: ds, \; t \in J$. $T$ is a continuous and bounded linear operator. 
+
+\subsection{Other properties}
+
+\begin{definition}
+Let $B(V,W)$ be the set of all bounded linear operators from $V \rightarrow W$. 
+\end{definition}
+\begin{itemize}
+\item This is a vector space and the operator norm is a norm on this vector space.\\
+\end{itemize}
+
+\begin{theorem}
+$B(V,W)$ is a Banach space if $W$ is a Banach space. \\
+\end{theorem}
+
+\begin{definition}
+{\bf Linear functional.} A linear functional is a linear mapping from a normed space to its field of scalars which can be either $\mathbb{R}$ or $\mathbb{C}$. \\
+\end{definition}
+
+\begin{definition}
+{\bf Invertible bounded linear operators.} A bounded linear operator $T : X \rightarrow Y$ is said to be invertible in the space of bounded linear operators if $T$ is a bijection and the linear operator $T^{-1}$ is bounded.  
+\end{definition}
+\begin{itemize}
+\item Note that for a linear operator $T$, $T$ bounded $\nRightarrow T^{-1}$ bounded. 
+\end{itemize}
+
+\section{Linear Operators on Hilbert Spaces}
+
+\begin{definition}
+{\bf Adjoint.} Let $T : H_{1} \rightarrow H_{2}$ be a bounded linear functional between Hilbert spaces. The adjoint $T^{\ast}$ of $T$ is defined by \vspace{-8pt}
+\[
+< Tx,y >_{2} \; = \; < x,T^{\ast}y >_{1} \vspace{-8pt}
+\]
+where $x \in H_{1}$ and $y \in H_{2}$. 
+\end{definition}
+\begin{itemize}
+\item If $T$ is represented by a matrix, then $T^{\ast}$ is the complex conjugate transpose of that matrix. \vspace{5pt}
+\end{itemize}
+
+The next result helps us prove that the adjoint exists. \\
+
+\begin{theorem}
+{\bf Riesz representation theorem.} Let $f$ be a bounded linear functional on a Hilbert space $H$. Then there is a unique vector $a \in H$ so that $f(x) = \; < x,a >$ for every $x \in H$. \\
+\end{theorem}
+
+\begin{theorem}
+Let $T : H_{1} \rightarrow H_{2}$ be a bounded linear functional between Hilbert spaces. The adjoint $T^{\ast}$ is a bounded linear operator and is unique. \\
+\end{theorem}
+
+\begin{theorem}
+The adjoint $T^{\ast}$ of a bounded linear operator $T : H_{1} \rightarrow H_{2}$ satisfies $T^{\ast\ast} = T$ and $\Vert T^{\ast} \Vert = \Vert T \Vert$. \\
+\end{theorem}
+
+\begin{definition}
+Classes of bounded linear operators:
+\begin{itemize}
+\item A bounded linear operator $T : H \rightarrow H$ is {\bf self adjoint} if $T^{\ast} = T$. \vspace{-5pt}
+\item A bounded linear operator $T : H \rightarrow H$ is {\bf positive} if $T$ is self adjoint and also $< Tx,x > \: \geq 0$ for every $x \in H$. \vspace{-15pt} 
+\item A bounded linear operator $T : H \rightarrow H$ is {\bf unitary} if $TT^{\ast} = T^{\ast}T = I$. \vspace{-5pt} 
+\item A linear operator $T : H_{1} \rightarrow H_{2}$ is an {\bf isometry} if $< Tx,ty >_{2} \; = \; < x,y >_{1}$ for every $x,y \in H_{1}$. \\
+\end{itemize}
+\end{definition}
+
+{\bf Remarks.}
+\begin{itemize}
+\item The concept of self adjoint linear operators is a generalisation of symmetric and Hermetian matrices (see section \ref{matrices}). 
+\item The eigenvalues of a self adjoint linear operator are real. 
+\item The eigenvalues of a positive linear operator are positive (and real) if they exist.
+\item Let $T$ be a unitary linear transformation. If $H$ is finite dimensional and real, $T$ is called orthogonal. If $H$ is finite dimensional and complex, $T$ is called unitary. \\
+\end{itemize}
+
+\begin{theorem}
+{\bf Spectral theorem.} Let $T$ is a self-adjoint linear transformation (or, equivalently, $T$ can be represented by a Hermitian or symmetric matrix) on a finite dimensional complex inner product space $V$. Then there's an orthonormal basis for $V$ such that the matrix representation of $T$ is diagonal with respect to this basis. \\
+\end{theorem}
+
+\begin{definition}
+{\bf Dual space.} The dual space $H'$ of a Hilbert space $H$ is the collection of all bounded linear functionals on $H$. This is a Banach space, where the norm given by $\Vert f \Vert$ is the usual operator norm (see definition \ref{operator norm}).
+\end{definition}
+
+\section{Self Adjoint Compact Operators}
+
+Some properties of \emph{self adjoint} operators:
+\begin{itemize}
+\item All eigenvalues of a self adjoint operator are real. 
+\item If a linear operator $T : H \rightarrow H$ is self adjoint then $< Tx,x >$ is real for all $x \in H$. 
+\item If $T$ is a self adjoint linear operator then its eigenspaces are orthogonal. \\
+\end{itemize}
+
+\begin{definition}
+{\bf Compact linear operator.} Let $X$ be a normed space and $S$ be the unit sphere $S = \{ x \in X : \Vert x \Vert = 1 \}$. A bounded linear operator $T : X \rightarrow X$ is called compact if $T(S)$ is compact. 
+\end{definition}
+\begin{itemize}
+\item Recall that we can use a norm on a vector space to define a metric and make a metric space (proposition \ref{norm to metric}). For a metric space, we have several ways to think about compactness (see theorem \ref{charact. of compactness}).  \\
+\end{itemize}
+
+\begin{proposition}
+Let $T : X \rightarrow X$ be compact. Then:
+\begin{itemize}
+\item if $B$ is a closed ball of radius $r$ centred at the origin of $X$, $\overline{T(B)}$ is compact;
+\item if $A$ is a bounded set in $X$, $\overline{T(A)}$ is compact. \vspace{5pt}
+\end{itemize}
+\end{proposition}
+
+{\bf Example.} We saw earlier that Fredholm operators are bounded and continuous. They are also compact. \\
+
+\begin{theorem}
+For any bounded self-adjoint operator $T : H \rightarrow H$, $\Vert T \Vert = \sup_{\Vert x \Vert = 1} \vert < Tx, x > \vert$.
+\end{theorem}
+\begin{itemize}
+\item This result doesn't depend on compactness, but it's needed to prove the next theorem. \\
+\end{itemize}
+
+\begin{theorem}
+Let $T : H \rightarrow H$ be a non-zero compact self adjoint operator. Then there is an eigenvalue $\lambda$ of $T$ with $\vert \lambda \vert = \Vert T \Vert$. Any corresponding eigenvector $x$ with $\Vert x \Vert = 1$ is a solution of the extremal problem $\max_{\Vert u \Vert = 1} \vert < Tu, u > \vert$. 
+\end{theorem}
+\begin{itemize}
+\item It follows from this theorem and the previous one that if $T : H \rightarrow H$ is a non-zero compact self adjoint operator and there exists $x$ with $\Vert x \Vert = 1$ that is a solution to the extremal problem $\max_{\Vert u \Vert = 1} \vert < Tu, u > \vert$, then $T$ has an eigenvalue $\lambda$ that satisfies $\vert \lambda \vert = \Vert T \Vert = \vert < Tx, x > \vert$. \\
+\end{itemize}
+
+\begin{theorem}
+Let $T : H \rightarrow H$ be a non-zero compact self adjoint operator. Then there is an orthonormal basis of eigenvectors for $H$. 
+\end{theorem}
+\begin{itemize}
+\item This is equivalent to saying that $T$ can be diagonalised. \\
+\end{itemize}
+
+\begin{theorem}
+{\bf Spectral Expansion Theorem.} Let $T : H \rightarrow H$ be a non-zero compact self adjoint operator with the set of eigenvalues $\Lambda$. For each $\mu \in \Lambda$, let $X_{\mu}$ be the eigenspace formed  by the eigenvectors corresponding to $\mu$ and let $P(\mu)$ be the orthogonal projection onto $X_{\mu}$. Then $Tx = \sum_{\mu \in \Lambda} \mu P(\mu)x$ for all $x \in H$. 
+\end{theorem}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
