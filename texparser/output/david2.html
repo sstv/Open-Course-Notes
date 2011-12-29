@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TeXParser Output</title>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+    </script>
+    <script type="text/javascript"
+	    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+  </head>
+  <body>
+\begin{align*}
+a & b & c \\
+\frac{bla}{3} & & 
+\end{align*}
+
+\begin{tabular}{|l|l|l|}\hline
+1 & 2 & 1 \\ \hline
+$\sum_i^\infty poop$ & 2 & 1 \hline
+\end{tabular}
+
+$$\zeta(s) = \sum_1^\infty \frac{1}{n^s}$$
+
+Here is some inline mathematics: $x = \tfrac{1}{2a}(-b \pm \sqrt{b^2 - 4ac})$.
+  </body>
+</html>
